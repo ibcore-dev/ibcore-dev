@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Órion Perfil</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f4f6f9;
+}
+
+/* HEADER */
+.header {
+    height: 95px;
+    background: url("logo_orion.png") center/cover no-repeat;
+}
+
+/* MAIN */
+.main {
+    display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 200px;
+    margin-top: -10px;
+    background: white;
+    padding: 300px 20px 20px 20px;
+    height: calc(100vh - 80px);
+    border-right: 2px solid #ddd;
+}
+
+.sidebar div {
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+/* FEED */
+.feed {
+    flex: 1;
+    padding: 20px;
+}
+
+/* CAPA (mantida como você fez) */
+.cover-global {
+    width: calc(190% + 250px);
+    height: 275px;
+    background: #ccc;
+    position: relative;
+    left: -547px;
+    margin-top: -39px;
+    overflow: hidden;
+}
+
+.cover-global img {
+    width: 100%;
+    height: 150%;
+    object-fit: cover;
+}
+
+/* BOTÃO CAPA */
+.btn-capa {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-capa:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* PERFIL SOBRE A CAPA */
+.perfil-global {
+    display: flex;
+    align-items: flex-end;
+    margin-left: -140px; /* corrigido */
+    margin-top: -105px;
+    z-index: 1;
+}
+
+.profile-pic {
+    width: 140px;
+    height: 140px;
+    border-radius: 12px;
+    border: 4px solid white;
+    background: #eee;
+    position: relative;
+    z-index: 10; /* 🔥 GARANTE SOBREPOSIÇÃO */
+}
+
+.perfil-texto {
+    margin-left: 15px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 20; /* 🔥 acima até da foto se precisar */
+}
+.perfil-detalhes {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: -55px;
+    width: 96%;
+}
+#nomePerfil {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* POST */
+.post-box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    outline: none;
+}
+
+/* POSTS */
+.post {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.post img, .post video {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+/* RIGHT */
+.right {
+    width: 300px;
+    padding: 20px;
+    margin-top: 250px;
+}
+
+.box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* BOTÃO ORION */
+.orion-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(90deg,#00c6ff,#0072ff);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header"></div>
+
+<div class="main">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div onclick="goChat()">🤖 Chat</div>
+    <div onclick="editarPerfil()">👤 Editar Perfil</div>
+    <div onclick="irPerfil()">👤 Perfil</div>
+    <div onclick="logout()">🚪 Sair</div>
+</div>
+
+<!-- FEED -->
+<div class="feed">
+
+    <!-- CAPA -->
+    <div class="cover-global">
+        <img id="capa">
+
+        <button class="btn-capa" onclick="document.getElementById('inputCapa').click()">
+            Alterar capa
+        </button>
+
+        <input type="file" id="inputCapa" accept="image/*" style="display:none" onchange="uploadCapa(event)">
+    </div>
+
+    <!-- PERFIL -->
+    <div class="perfil-global">
+        <img id="foto" class="profile-pic">
+
+        <div class="perfil-texto">
+            <div id="bioTopo"></div>
+        </div>
+    </div>
+
+    <!-- POST -->
+    <div class="post-box">
+        <textarea id="postInput" placeholder="No que você está pensando?"></textarea>
+        <input type="file" id="mediaInput" accept="image/*,video/*">
+        <button onclick="postar()">Publicar</button>
+    </div>
+
+    <div id="posts"></div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+    <div class="box">
+        <b>🔥 Em Alta</b>
+        <p>#Órion</p>
+        <p>#IA</p>
+    </div>
+</div>
+
+</div>
+
+<div class="orion-btn" onclick="goChat()">🤖</div>
+
+<footer>
+© 2026 IB Core Systems | Fundador Thyago Braga
+</footer>
+
+<script>
+
+const API = "http://127.0.0.1:8000";
+
+// TOKEN
+let token = localStorage.getItem("token");
+
+if (!token) {
+    alert("Faça login novamente");
+    window.location.href = "login.html";
+}
+
+// ==========================
+// 📥 CARREGAR PERFIL
+// ==========================
+async function carregarPerfil() {
+    try {
+        let r = await fetch(API + "/profile/me", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        let data = await r.json();
+
+        let foto = document.getElementById("foto");
+        if (foto && data.foto) foto.src = API + "/" + data.foto;
+
+        let capa = document.getElementById("capa");
+        if (capa && data.capa) capa.src = API + "/" + data.capa;
+
+    } catch (e) {
+        console.error("Erro perfil:", e);
+    }
+}
+
+// ==========================
+// 📥 CARREGAR FEED (FIXADO)
+// ==========================
+async function carregarFeed(){
+    try {
+        let r = await fetch(API + "/posts/feed");
+        let posts = await r.json();
+
+        render(posts);
+
+    } catch(e){
+        console.error("Erro feed:", e);
+    }
+}
+
+// ==========================
+// ❤️ LIKE (BACKEND)
+// ==========================
+async function like(postId){
+    await fetch(API + "/posts/like/" + postId, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    carregarFeed();
+}
+
+// ==========================
+// 💬 COMENTAR (BACKEND)
+// ==========================
+async function comentar(postId){
+    let input = document.getElementById("comentario-" + postId);
+    if(!input) return;
+
+    let text = input.value;
+    if(!text) return;
+
+    await fetch(API + "/posts/comment/" + postId, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ content: text })
+    });
+
+    carregarFeed();
+}
+
+// ==========================
+// 🗑️ EXCLUIR
+// ==========================
+async function excluirPost(id){
+    if(!confirm("Excluir post?")) return;
+
+    await fetch(API + "/posts/delete/" + id, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    carregarFeed();
+}
+
+// ==========================
+// 🔥 RENDER (FIXADO)
+// ==========================
+function render(posts){
+    let area = document.getElementById("posts");
+    if(!area) return;
+
+    area.innerHTML = "";
+
+    posts.forEach((p) => {
+
+        let comentariosHTML = "";
+        p.comments.forEach(c => {
+            comentariosHTML += `<p><b>${c.user}:</b> ${c.content}</p>`;
+        });
+
+        let mediaHTML = "";
+
+        if(p.media){
+            if(p.mediaType === "image"){
+                mediaHTML = `<img src="${API}/${p.media}" style="max-width:100%; border-radius:10px;">`;
+            }
+
+            if(p.mediaType === "video"){
+                mediaHTML = `
+                    <video controls style="max-width:100%; border-radius:10px;">
+                        <source src="${API}/${p.media}">
+                    </video>
+                `;
+            }
+        }
+
+        let div = document.createElement("div");
+        div.className = "post";
+
+        div.innerHTML = `
+            <b>${p.user}</b><br>
+            <small>${p.time}</small>
+            <p>${p.content || ""}</p>
+
+            ${mediaHTML}
+
+            <div>
+                ❤️ <span onclick="like(${p.id})">${p.likes}</span>
+                | 🗑️ <span onclick="excluirPost(${p.id})">Excluir</span>
+            </div>
+
+            <div style="margin-top:10px;">
+                ${comentariosHTML}
+            </div>
+
+            <input id="comentario-${p.id}" placeholder="Comentar...">
+            <button onclick="comentar(${p.id})">Enviar</button>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+// ==========================
+// NAV
+// ==========================
+function editarPerfil(){ window.location.href = "editar_perfil.html"; }
+function goChat(){ window.location.href = "chat.html"; }
+function irPerfil(){ window.location.href = "comunidade.html"; }
+
+function logout(){
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+}
+
+// ==========================
+// START
+// ==========================
+window.onload = () => {
+    carregarPerfil();
+    carregarFeed();
+};
+
+</script>
+
+</body>
+</html>

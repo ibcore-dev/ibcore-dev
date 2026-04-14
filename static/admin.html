@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Órion Admin</title>
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">ÓRION</div>
+
+        <ul>
+            <li class="active">📊 Dashboard</li>
+            <li>👥 Usuários</li>
+            <li>💬 Uso</li>
+            <li>🧠 IA</li>
+            <li>⚠️ Erros</li>
+            <li>⚙️ Config</li>
+        </ul>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="content">
+
+        <h1>Painel de Controle</h1>
+
+        <!-- CARDS -->
+        <div class="cards">
+
+            <div class="card">
+                <h3>👤 Usuários</h3>
+                <p id="usuarios">120</p>
+            </div>
+
+            <div class="card">
+                <h3>💬 Mensagens</h3>
+                <p id="mensagens">5400</p>
+            </div>
+
+            <div class="card">
+                <h3>🧠 Uso IA</h3>
+                <p id="ia">3200</p>
+            </div>
+
+            <div class="card">
+                <h3>⚠️ Erros</h3>
+                <p id="erros">2</p>
+            </div>
+
+        </div>
+
+        <!-- GRÁFICO -->
+        <div class="box">
+            <h2>Uso do Sistema</h2>
+            <canvas id="grafico"></canvas>
+        </div>
+
+        <!-- TABELA -->
+        <div class="box">
+            <h2>Usuários Recentes</h2>
+
+            <div id="lista-usuarios"></div>
+        </div>
+
+    </main>
+
+</div>
+
+<script src="admin.js"></script>
+
+</body>
+</html>

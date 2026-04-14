@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Órion Nexus</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(180deg, #0a0f1c, #05080f);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* HEADER */
+.header {
+    padding: 15px;
+    text-align: center;
+    font-size: 18px;
+    background: #0f172a;
+    border-bottom: 1px solid #1e293b;
+}
+
+/* CHAT */
+.chat {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* MENSAGENS */
+.msg {
+    padding: 12px 15px;
+    border-radius: 12px;
+    margin: 8px 0;
+    max-width: 70%;
+    line-height: 1.4;
+    animation: fadeIn 0.2s ease;
+}
+
+.user {
+    background: linear-gradient(90deg,#2563eb,#1d4ed8);
+    align-self: flex-end;
+}
+
+.bot {
+    background: #1e293b;
+    align-self: flex-start;
+}
+
+/* ANIMAÇÃO */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(5px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* INPUT */
+.input-area {
+    display: flex;
+    padding: 10px;
+    background: #0f172a;
+    border-top: 1px solid #1e293b;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #1e293b;
+    color: white;
+}
+
+button {
+    margin-left: 10px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg,#00c6ff,#0072ff);
+    color: white;
+    cursor: pointer;
+}
+
+/* RODAPÉ */
+footer {
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.6;
+    padding: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    Órion Nexus
+</div>
+
+<div class="chat" id="chat"></div>
+
+<div class="input-area">
+    <input type="text" id="msgInput" placeholder="Digite sua mensagem...">
+    <button onclick="sendMessage()">Enviar</button>
+</div>
+
+<footer>
+© 2026 IB Core Systems | Fundador Thyago Braga
+</footer>
+
+<script>
+
+const API = "http://127.0.0.1:8000";
+
+// 🔒 PROTEÇÃO
+let token = localStorage.getItem("token");
+if (!token) window.location.href = "index.html";
+
+// ENVIAR
+async function sendMessage() {
+
+    let input = document.getElementById("msgInput");
+    let text = input.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user");
+    input.value = "";
+
+    // 🔥 loading
+    let loading = addMessage("Órion está pensando...", "bot");
+
+    try {
+        let r = await fetch(API + "/command", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                token: token,
+                input: text
+            })
+        });
+
+        let data = await r.json();
+
+        loading.remove(); // remove loading
+        addMessage(data.response, "bot");
+
+    } catch {
+        loading.innerText = "Erro ao conectar com o Órion";
+    }
+}
+
+// MENSAGEM
+function addMessage(text, type) {
+    let chat = document.getElementById("chat");
+
+    let msg = document.createElement("div");
+    msg.classList.add("msg", type);
+    msg.innerText = text;
+
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+
+    return msg;
+}
+
+// ENTER
+document.getElementById("msgInput")
+.addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+});
+
+</script>
+
+</body>
+</html>

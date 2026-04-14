@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Órion Perfil</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f4f6f9;
+}
+
+/* HEADER */
+.header {
+    height: 95px;
+    background: url("logo_orion.png") center/cover no-repeat;
+}
+
+/* MAIN */
+.main {
+    display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 200px;
+    margin-top: -10px;
+    background: white;
+    padding: 305px 20px 20px 20px;
+    height: calc(100vh - 80px);
+    border-right: 2px solid #ddd;
+}
+
+.sidebar div {
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+/* FEED */
+.feed {
+    flex: 1;
+    padding: 20px;
+}
+
+/* CAPA (mantida como você fez) */
+.cover-global {
+    width: calc(192% + 250px);
+    height: 280px;
+    background: #ccc;
+    position: relative;
+    left: -547px;
+    margin-top: -39px;
+    overflow: hidden;
+}
+
+.cover-global img {
+    width: 100%;
+    height: 150%;
+    object-fit: cover;
+}
+
+/* BOTÃO CAPA */
+.btn-capa {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-capa:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* PERFIL SOBRE A CAPA */
+.perfil-global {
+    display: flex;
+    align-items: flex-end;
+    margin-left: -140px; /* corrigido */
+    margin-top: -105px;
+    z-index: 1;
+}
+
+.profile-pic {
+    width: 140px;
+    height: 140px;
+    border-radius: 12px;
+    border: 4px solid white;
+    background: #eee;
+    position: relative;
+    z-index: 10; /* 🔥 GARANTE SOBREPOSIÇÃO */
+}
+
+.perfil-texto {
+    margin-left: 15px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 20; /* 🔥 acima até da foto se precisar */
+}
+.perfil-detalhes {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: -55px;
+    width: 96%;
+}
+#nomePerfil {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* POST */
+.post-box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    outline: none;
+}
+
+/* POSTS */
+.post {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.post img, .post video {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.box-direita {
+    width: 300px;
+    padding: 15px;
+    margin-top: 270px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* AMIZADES */
+.amizades {
+    width: 300px;
+    padding: 15px;
+    margin-top: 20px; /* 🔥 corrigido (antes 250 quebrava tudo) */
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+
+    max-height: 220px;   /* 🔥 controla altura */
+    overflow-y: auto;    /* 🔥 scroll interno */
+}
+/* BOTÃO ORION */
+.orion-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(90deg,#00c6ff,#0072ff);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header"></div>
+
+<div class="main">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <button onclick="addFriend(2)">Adicionar amigo</button>
+    <div onclick="goChat()">🤖 Chat</div>
+    <div onclick="editarPerfil()">👤 Editar Perfil</div>
+    <div onclick="irFeed()">🔥 Feed</div>
+    <div onclick="logout()">🚪 Sair</div>
+</div>
+
+<!-- FEED -->
+<div class="feed">
+
+    <!-- CAPA -->
+    <div class="cover-global">
+        <img id="capa">
+
+        <button class="btn-capa" onclick="document.getElementById('inputCapa').click()">
+            Alterar capa
+        </button>
+
+        <input type="file" id="inputCapa" accept="image/*" style="display:none" onchange="uploadCapa(event)">
+    </div>
+
+    <!-- PERFIL -->
+    <div class="perfil-global">
+        <img id="foto" class="profile-pic">
+
+        <div class="perfil-texto">
+            <div id="bioTopo"></div>
+        </div>
+    </div>
+
+    <!-- DADOS -->
+    <div class="perfil-detalhes">
+        <h2 id="nomePerfil">Carregando...</h2>
+
+        <p><b>Relacionamento:</b> <span id="relacionamento"></span></p>
+        <p><b>Data de nascimento:</b> <span id="nascimento"></span></p>
+        <p><b>Profissão:</b> <span id="profissao"></span></p>
+        <p><b>Bio:</b> <span id="bioPerfil"></span></p>
+    </div>
+
+    <!-- POST -->
+    <div class="post-box">
+        <textarea id="postInput" placeholder="No que você está pensando?"></textarea>
+        <input type="file" id="mediaInput" accept="image/*,video/*">
+        <button onclick="postar()">Publicar</button>
+    </div>
+
+    <div id="posts"></div>
+
+</div>
+
+<<div class="box-direita">
+
+    <h3>🤝 Amizades</h3>
+
+    <!-- 🔎 BUSCA -->
+    <input type="text" id="buscaUsuario" placeholder="Buscar usuário..." onkeyup="buscarUsuarios()">
+
+    <div id="resultadoBusca"></div>
+
+    <hr>
+
+    <!-- 🔥 SUGESTÕES -->
+    <h4>Sugestões</h4>
+    <div id="sugestoes"></div>
+
+    <hr>
+
+    <!-- 📥 PEDIDOS -->
+    <h4>Pedidos</h4>
+    <div id="listaAmizades"></div>
+
+    <hr>
+
+    <!-- 👥 AMIGOS -->
+    <h4>Seus amigos (<span id="totalAmigos">0</span>)</h4>
+    <div id="listaAmigos"></div>
+</div>
+</div>
+
+<div class="orion-btn" onclick="goChat()">🤖</div>
+
+<footer>
+© 2026 IB Core Systems | Fundador Thyago Braga
+</footer>
+
+<script>
+
+const API = "http://127.0.0.1:8000";
+
+// TOKEN
+let token = localStorage.getItem("token");
+
+if (!token) {
+    alert("Faça login novamente");
+    window.location.href = "login.html";
+}
+
+// ==========================
+// 📥 CARREGAR PERFIL
+// ==========================
+async function carregarPerfil() {
+    try {
+        let r = await fetch(API + "/profile/me", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        let data = await r.json();
+
+        let foto = document.getElementById("foto");
+        if (foto && data.foto) foto.src = API + "/" + data.foto;
+
+        let capa = document.getElementById("capa");
+        if (capa && data.capa) capa.src = API + "/" + data.capa;
+
+        let nomeEl = document.getElementById("nomePerfil");
+        if (nomeEl) {
+            nomeEl.innerText =
+                data.nome?.trim() ||
+                data.username ||
+                "Usuário";
+        }
+
+        let rel = document.getElementById("relacionamento");
+        if (rel) rel.innerText = data.relacionamento || "-";
+
+        let nasc = document.getElementById("nascimento");
+        if (nasc) {
+            if (data.nascimento) {
+                let partes = data.nascimento.split("-");
+                nasc.innerText = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            } else {
+                nasc.innerText = "-";
+            }
+        }
+
+        let prof = document.getElementById("profissao");
+        if (prof) prof.innerText = data.profissao || "-";
+
+        let bio = document.getElementById("bioPerfil");
+        if (bio) bio.innerText = data.bio || "";
+
+    } catch (e) {
+        console.error("Erro ao carregar perfil:", e);
+    }
+}
+
+async function addFriend(userId){
+    await fetch(API + "/friends/add/" + userId, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    alert("Solicitação enviada");
+}
+
+async function buscarUsuarios(){
+
+    let q = document.getElementById("buscaUsuario").value;
+
+    let r = await fetch(API + "/users/search?q=" + q, {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    let data = await r.json();
+
+    let area = document.getElementById("resultadoBusca");
+    area.innerHTML = "";
+
+    data.forEach(u => {
+
+        let div = document.createElement("div");
+
+        div.innerHTML = `
+            <b>${u.username}</b>
+            <button onclick="addFriend(${u.id})">Adicionar</button>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+async function carregarSugestoes(){
+
+    let r = await fetch(API + "/users/suggestions", {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    let data = await r.json();
+
+    let area = document.getElementById("sugestoes");
+    area.innerHTML = "";
+
+    data.forEach(u => {
+
+        let div = document.createElement("div");
+        div.className = "amigo-item";
+
+        let foto = u.foto ? API + "/" + u.foto : "https://via.placeholder.com/30";
+
+        div.innerHTML = `
+            <img src="${foto}" width="30" style="border-radius:50%;">
+            <b>${u.username}</b>
+            <button onclick="addFriend(${u.id})">Adicionar</button>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+async function carregarSolicitacoes(){
+
+    let r = await fetch(API + "/friends/requests", {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    if(!r.ok){
+        console.error("Erro ao carregar solicitações");
+        return;
+    }
+
+    let data = await r.json();
+
+    let area = document.getElementById("listaAmizades");
+    area.innerHTML = "";
+
+    if(data.length === 0){
+        area.innerHTML = "<p>Sem pedidos</p>";
+        return;
+    }
+
+    data.forEach(f => {
+
+        let div = document.createElement("div");
+        div.className = "amigo-item";
+
+        let foto = f.foto ? API + "/" + f.foto : "https://via.placeholder.com/30";
+
+        div.innerHTML = `
+            <img src="${foto}" width="30" style="border-radius:50%;">
+            <b>${f.user}</b>
+            <button onclick="window.aceitar(${f.id})">Aceitar</button>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+// 🔥 FUNÇÃO GLOBAL (ESSENCIAL)
+window.aceitar = async function(id){
+
+    console.log("ACEITAR:", id);
+
+    let r = await fetch(API + "/friends/accept/" + id, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    if(!r.ok){
+        console.error("Erro ao aceitar");
+        return;
+    }
+
+    // 🔥 atualiza tudo
+    carregarSolicitacoes();
+    carregarSugestoes();
+    carregarAmigos();
+}
+
+async function carregarAmigos(){
+
+    let r = await fetch(API + "/friends/list", {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    let data = await r.json();
+
+    // ✅ AGORA CORRETO
+    document.getElementById("totalAmigos").innerText = data.length;
+
+    let area = document.getElementById("listaAmigos");
+    area.innerHTML = "";
+
+    data.forEach(u => {
+
+        let div = document.createElement("div");
+        div.className = "amigo-item";
+
+        let foto = u.foto ? API + "/" + u.foto : "https://via.placeholder.com/30";
+
+        div.innerHTML = `
+            <img src="${foto}" width="30" style="border-radius:50%;">
+            <b onclick="abrirPerfil(${u.id})" style="cursor:pointer;">
+                ${u.username}
+            </b>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+function abrirPerfil(userId){
+    window.location.href = "perfil.html?id=" + userId;
+}
+
+async function buscarUsuarios(){
+
+    let q = document.getElementById("buscaUsuario").value;
+
+    let r = await fetch(API + "/users/search?q=" + q, {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    let data = await r.json();
+
+    let area = document.getElementById("resultadoBusca");
+    area.innerHTML = "";
+
+    data.forEach(u => {
+
+        let div = document.createElement("div");
+
+        div.innerHTML = `
+            <b>${u.username}</b>
+            <button onclick="addFriend(${u.id})">Adicionar</button>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+async function carregarSugestoes(){
+
+    let r = await fetch(API + "/users/suggestions", {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    let data = await r.json();
+
+    let area = document.getElementById("sugestoes");
+    area.innerHTML = "";
+
+    data.forEach(u => {
+
+        let div = document.createElement("div");
+        div.className = "amigo-item";
+
+        let foto = u.foto ? API + "/" + u.foto : "https://via.placeholder.com/30";
+
+        div.innerHTML = `
+            <img src="${foto}" width="30" style="border-radius:50%;">
+            <b>${u.username}</b>
+            <button onclick="addFriend(${u.id})">Adicionar</button>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+async function carregarSolicitacoes(){
+
+    let r = await fetch(API + "/friends/requests", {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    if(!r.ok){
+        console.error("Erro ao carregar solicitações");
+        return;
+    }
+
+    let data = await r.json();
+    console.log("Solicitações:", data); // 🔥 DEBUG
+
+    let area = document.getElementById("listaAmizades");
+    area.innerHTML = "";
+
+    if(data.length === 0){
+        area.innerHTML = "<p>Sem pedidos</p>";
+        return;
+    }
+
+    data.forEach(f => {
+
+        let div = document.createElement("div");
+        div.className = "amigo-item";
+
+        let foto = f.foto ? API + "/" + f.foto : "https://via.placeholder.com/30";
+
+        div.innerHTML = `
+            <img src="${foto}" width="30" style="border-radius:50%;">
+            <b>${f.user}</b>
+            <button onclick="aceitar(${f.id})">Aceitar</button>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+async function aceitar(id){
+
+    await fetch(API + "/friends/accept/" + id, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    // 🔥 ATUALIZA TUDO
+    carregarSolicitacoes();
+    carregarSugestoes();
+    carregarAmigos();
+}
+async function carregarAmigos(){
+    document.getElementById("totalAmigos").innerText = data.length;
+
+    let r = await fetch(API + "/friends/list", {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    let data = await r.json();
+
+    let area = document.getElementById("listaAmigos");
+    area.innerHTML = "";
+
+    data.forEach(u => {
+
+        let div = document.createElement("div");
+        div.className = "amigo-item";
+
+        let foto = u.foto ? API + "/" + u.foto : "https://via.placeholder.com/30";
+
+        div.innerHTML = `
+            <img src="${foto}" width="30" style="border-radius:50%;">
+            <b onclick="abrirPerfil(${u.id})" style="cursor:pointer;">
+                ${u.username}
+            </b>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+function abrirPerfil(userId){
+    window.location.href = "perfil.html?id=" + userId;
+}
+// ==========================
+// 📥 POSTS DO USUÁRIO
+// ==========================
+async function carregarMeusPosts(){
+    try {
+        let r = await fetch(API + "/posts/me", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        let posts = await r.json();
+        render(posts);
+
+    } catch(e){
+        console.error("Erro ao carregar posts:", e);
+    }
+}
+
+async function addFriend(userId){
+    await fetch(API + "/friends/add/" + userId, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    alert("Solicitação enviada");
+}
+
+// ==========================
+// 🖼️ UPLOAD CAPA
+// ==========================
+async function uploadCapa(event){
+    let file = event.target.files[0];
+    if(!file) return;
+
+    let formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        let r = await fetch(API + "/upload-profile-image", {
+            method: "POST",
+            headers: { "Authorization": "Bearer " + token },
+            body: formData
+        });
+
+        let data = await r.json();
+
+        document.getElementById("capa").src = API + "/" + data.image_url;
+
+        await fetch(API + "/profile/save", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                capa: data.image_url
+            })
+        });
+
+    } catch(e){
+        console.error(e);
+        alert("Erro ao enviar capa");
+    }
+}
+
+// ==========================
+// 📝 POSTAR (COM MÍDIA)
+// ==========================
+async function postar(){
+
+    let input = document.getElementById("postInput");
+    let fileInput = document.getElementById("mediaInput");
+
+    let text = input.value;
+    let file = fileInput.files[0];
+
+    let mediaUrl = null;
+    let mediaType = null;
+
+    try {
+
+        if(file){
+            let formData = new FormData();
+            formData.append("file", file);
+
+            let r = await fetch(API + "/upload-profile-image", {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + token },
+                body: formData
+            });
+
+            let data = await r.json();
+            mediaUrl = data.image_url;
+
+            if(file.type.startsWith("image")) mediaType = "image";
+            if(file.type.startsWith("video")) mediaType = "video";
+        }
+
+        let response = await fetch(API + "/posts/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                content: text,
+                media: mediaUrl,
+                mediaType: mediaType
+            })
+        });
+
+        if(!response.ok){
+            let erro = await response.text();
+            console.error("Erro ao postar:", erro);
+            alert("Erro ao publicar");
+            return;
+        }
+
+        input.value = "";
+        fileInput.value = "";
+
+        carregarMeusPosts();
+
+    } catch(e){
+        console.error("Erro ao postar:", e);
+    }
+}
+
+// ==========================
+// ❤️ LIKE (TEMPORÁRIO)
+// ==========================
+async function like(postId){
+    await fetch(API + "/posts/like/" + postId, {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    carregarMeusPosts(); // 🔥 recarrega do backend
+}
+
+// ==========================
+// 💬 COMENTAR (TEMPORÁRIO)
+// ==========================
+async function comentar(postId){
+    let input = document.getElementById("comentario-" + postId);
+    if(!input) return;
+
+    let text = input.value;
+    if(!text) return;
+
+    await fetch(API + "/posts/comment/" + postId, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ content: text })
+    });
+
+    carregarMeusPosts();
+}
+// ==========================
+// ✏️ EDITAR (TEMPORÁRIO)
+// ==========================
+async function editarPost(postId){
+
+    let novo = prompt("Editar postagem:");
+
+    if(novo !== null && novo.trim() !== ""){
+
+        await fetch(API + "/posts/edit/" + postId, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                content: novo
+            })
+        });
+
+        carregarMeusPosts(); // 🔥 atualiza do backend
+    }
+}
+
+// ==========================
+// 🗑️ EXCLUIR (BACKEND)
+// ==========================
+async function excluirPost(id){
+
+    if(!confirm("Excluir post?")) return;
+
+    try {
+        await fetch(API + "/posts/delete/" + id, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        carregarMeusPosts();
+
+    } catch(e){
+        console.error(e);
+    }
+}
+
+// ==========================
+// 🔥 RENDER
+// ==========================
+function render(posts){
+
+    if(!posts || !Array.isArray(posts)){
+        console.warn("Posts inválidos:", posts);
+        return;
+    }
+
+    let area = document.getElementById("posts");
+    if(!area) return;
+
+    area.innerHTML = "";
+
+    posts.forEach((p, i) => {
+
+        if (!p.comments || !Array.isArray(p.comments)) p.comments = [];
+
+        let comentariosHTML = "";
+        p.comments.forEach(c => {
+            comentariosHTML += `<p><b>${c.user}:</b> ${c.content}</p>`;
+        });
+
+        let mediaHTML = "";
+
+        if(p.media && p.mediaType){
+            if(p.mediaType === "image"){
+                mediaHTML = `<img src="${API}/${p.media}" style="max-width:100%; border-radius:10px;">`;
+            }
+
+            if(p.mediaType === "video"){
+                mediaHTML = `
+                    <video controls style="max-width:100%; border-radius:10px;">
+                        <source src="${API}/${p.media}">
+                    </video>
+                `;
+            }
+        }
+
+        let div = document.createElement("div");
+        div.className = "post";
+
+        div.innerHTML = `
+            <b>${p.user || "Usuário"}</b><br>
+            <small>${p.time || ""}</small>
+            <p>${p.content || ""}</p>
+
+            ${mediaHTML}
+
+            <div>
+                ❤️ <span onclick="like(${i})">${p.likes || 0}</span>
+                | ✏️ <span onclick="editarPost(${i})">Editar</span>
+                | 🗑️ <span onclick="excluirPost(${p.id})">Excluir</span>
+            </div>
+
+            <div style="margin-top:10px;">
+                ${comentariosHTML}
+            </div>
+
+            <input id="comentario-${i}" placeholder="Comentar...">
+            <button onclick="comentar(${i})">Enviar</button>
+        `;
+
+        area.appendChild(div);
+    });
+}
+
+// ==========================
+// NAV
+// ==========================
+function editarPerfil(){ window.location.href = "editar_perfil.html"; }
+function goChat(){ window.location.href = "chat.html"; }
+function irFeed(){ window.location.href = "feed.html"; }
+
+function logout(){
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+}
+
+// ==========================
+// START
+// ==========================
+window.onload = () => {
+    carregarPerfil();
+    carregarMeusPosts();
+    carregarSolicitacoes();
+    carregarSugestoes();
+    carregarAmigos(); // 🔥 NOVO
+};
+
+</script>
+
+</body>
+</html>
