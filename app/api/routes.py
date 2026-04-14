@@ -11,6 +11,7 @@ from datetime import datetime
 from database.database import get_db
 from database.models import User as DBUser, Profile as DBProfile
 from database.models import Post, Like, Comment, Friend
+from pydantic import BaseModel
 
 import os
 import shutil
@@ -24,6 +25,11 @@ UPLOAD_DIR = "uploads"
 # =========================
 # MODELS
 # =========================
+from pydantic import BaseModel
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
 
 class User(BaseModel):
     username: str
@@ -79,13 +85,19 @@ def login(user: User, db: Session = Depends(get_db)):
 
     db_user = db.query(DBUser).filter(DBUser.username == user.username).first()
 
-    if not db_user or not verify_password(user.password, db_user.hashed_password):
-        raise HTTPException(status_code=401, detail="Credenciais inválidas")
+    if not db_user:
+        raise HTTPException(status_code=401, detail="Usuário não encontrado")
 
-    token = create_token({"sub": db_user.id})
+    try:
+        if not verify_password(user.password, db_user.hashed_password):
+            raise HTTPException(status_code=401, detail="Senha incorreta")
+    except Exception as e:
+        print("ERRO VERIFY:", e)
+        raise HTTPException(status_code=500, detail="Erro interno na verificação de senha")
+
+    token = create_token({"sub": str(db_user.id)})
 
     return {"access_token": token}
-
 # =========================
 # COMMAND
 # =========================
