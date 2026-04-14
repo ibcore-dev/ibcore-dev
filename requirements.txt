@@ -7,3 +7,5 @@ groq
 sqlalchemy
 python-multipart
 python-dotenv
+httpx
+bcrypt
