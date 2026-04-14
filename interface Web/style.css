@@ -1,0 +1,210 @@
+/* RESET BASE */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* ===== HOME ===== */
+.home {
+    background: url('assets/fundo_home.png') no-repeat center center;
+    background-size: cover;
+    height: 100vh;
+}
+
+/* OVERLAY HOME */
+.overlay {
+    text-align: center;
+    padding-top: 40px;
+}
+
+/* LOGO HOME */
+.logo-top {
+    width: 500px;
+    margin-top: -295px;
+}
+
+h1 {
+    margin-top: -310px;
+}
+
+/* BOTÕES */
+button {
+    background: linear-gradient(90deg, #001eff84, #0077ff97);
+    border: none;
+    padding: 12px 25px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+}
+
+/* CARDS */
+.cards {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.card {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid rgba(0, 200, 255, 0.5);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* ===== LOGIN FUNDO ===== */
+.login {
+    background: url('assets/fundo_login.png') no-repeat center center;
+    background-size: cover;
+
+    height: 100vh;
+    width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* ===== TOPO ===== */
+.topo {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.logo-login {
+    width: 200px;
+}
+
+/* ===== CENTRO ===== */
+.login-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-box h1 {
+    font-size: 45px;
+    letter-spacing: 2px;
+}
+
+/* ===== CAIXA LOGIN ===== */
+.login-box {
+    width: 250px;
+    padding: 35px 25px;
+    text-align: center;
+
+    background: rgba(10, 20, 40, 0.7);
+    border: 1px solid rgba(0, 200, 255, 0.5);
+    border-radius: 12px;
+
+    box-shadow:
+        0 0 20px rgba(0, 200, 255, 0.4),
+        inset 0 0 10px rgba(0, 200, 255, 0.1);
+
+    backdrop-filter: blur(8px);
+}
+
+/* TITULO */
+.login-box h1 {
+    margin-bottom: 60px;
+}
+
+/* INPUT */
+.login-box input {
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+
+    background: transparent;
+    border: 1px solid rgba(0, 200, 255, 0.4);
+    color: white;
+    outline: none;
+}
+
+/* BOTÃO */
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+
+    background: linear-gradient(90deg, #00cfff, #0077ff);
+    border: none;
+    color: white;
+    font-weight: bold;
+
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.6);
+}
+
+/* LINKS */
+.links {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.links span {
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+/* ===== RODAPÉ ===== */
+.rodape {
+    text-align: center;
+    padding-bottom: 15px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+/* ===== CHAT ===== */
+.chat {
+    background: #000;
+}
+
+.container {
+    display: flex;
+}
+
+.side {
+    width: 25%;
+    text-align: center;
+    padding: 20px;
+}
+
+.chat-box {
+    width: 75%;
+    padding: 20px;
+}
+
+.messages {
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 200, 255, 0.5);
+    padding: 10px;
+}
+
+.msg {
+    margin: 10px 0;
+}
+
+.user {
+    color: #00ffff;
+}
+
+.bot {
+    color: #ffffff;
+}
+
+.input-area {
+    margin-top: 10px;
+    display: flex;
+}
+
+.input-area input {
+    flex: 1;
+    padding: 10px;
+}

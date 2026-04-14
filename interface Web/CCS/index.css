@@ -1,0 +1,53 @@
+/* RESET */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* FUNDO */
+body {
+    background: url('../assets/fundo_home.png') no-repeat center center;
+    background-size: cover;
+}
+
+/* CONTEÚDO */
+.overlay {
+    text-align: center;
+    padding-top: 40px;
+}
+
+/* LOGO */
+.logo-top {
+    width: 320px;
+    margin-top: -80px;
+}
+
+/* BOTÃO */
+button {
+    background: linear-gradient(90deg, #00cfff, #0077ff);
+    border: none;
+    padding: 12px 25px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+}
+
+/* CARDS */
+.cards {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.card {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid rgba(0, 200, 255, 0.5);
+    background: rgba(0, 0, 0, 0.4);
+}

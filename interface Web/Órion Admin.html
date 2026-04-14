@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)http://127.0.0.1:8000/painel/admin.html -->
+<html lang="pt-br"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Órion Admin</title>
+<link rel="stylesheet" href="./Órion Admin_files/admin.css">
+<script src="./Órion Admin_files/chart.js.download"></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">ÓRION</div>
+
+        <ul>
+            <li class="active">📊 Dashboard</li>
+            <li>👥 Usuários</li>
+            <li>💬 Uso</li>
+            <li>🧠 IA</li>
+            <li>⚠️ Erros</li>
+            <li>⚙️ Config</li>
+        </ul>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="content">
+
+        <h1>Painel de Controle</h1>
+
+        <!-- CARDS -->
+        <div class="cards">
+
+            <div class="card">
+                <h3>👤 Usuários</h3>
+                <p id="usuarios">3</p>
+            </div>
+
+            <div class="card">
+                <h3>💬 Mensagens</h3>
+                <p id="mensagens">447</p>
+            </div>
+
+            <div class="card">
+                <h3>🧠 Uso IA</h3>
+                <p id="ia">447</p>
+            </div>
+
+            <div class="card">
+                <h3>⚠️ Erros</h3>
+                <p id="erros">0</p>
+            </div>
+
+        </div>
+
+        <!-- GRÁFICO -->
+        <div class="box">
+            <h2>Uso do Sistema</h2>
+            <canvas id="grafico" width="981" height="490" style="display: block; box-sizing: border-box; height: 490.5px; width: 981px;"></canvas>
+        </div>
+
+        <!-- TABELA -->
+        <div class="box">
+            <h2>Usuários Recentes</h2>
+
+            <div id="lista-usuarios"><div class="usuario-item">Usuario2</div><div class="usuario-item">Usuario1</div><div class="usuario-item">Thyago</div></div>
+        </div>
+
+    </main>
+
+</div>
+
+<script src="./Órion Admin_files/admin.js.download"></script>
+
+
+</body></html>
