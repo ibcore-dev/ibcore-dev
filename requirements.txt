@@ -6,3 +6,4 @@ python-jose
 groq
 sqlalchemy
 python-multipart
+python-dotenv
