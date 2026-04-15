@@ -2,6 +2,10 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+
+<!-- 🔥 ESSENCIAL PARA MOBILE -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Órion Nexus</title>
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -15,8 +19,8 @@
 
     <!-- LOGIN -->
     <div id="loginBox" class="box active">
-        <input type="text" id="loginUser" placeholder="Usuário">
-        <input type="password" id="loginPass" placeholder="Senha">
+        <input type="text" id="loginUser" placeholder="Usuário" autocomplete="username">
+        <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password">
         <button onclick="login()">Entrar</button>
 
         <p onclick="showRegister()">Criar conta</p>
@@ -25,8 +29,8 @@
 
     <!-- REGISTER -->
     <div id="registerBox" class="box">
-        <input type="text" id="regUser" placeholder="Usuário">
-        <input type="password" id="regPass" placeholder="Senha">
+        <input type="text" id="regUser" placeholder="Usuário" autocomplete="username">
+        <input type="password" id="regPass" placeholder="Senha" autocomplete="new-password">
         <button onclick="register()">Registrar</button>
 
         <p onclick="showLogin()">Voltar</p>

@@ -10,12 +10,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
-/* 🔲 CAIXA LOGIN (GLASS EFFECT) */
+/* 🔲 CAIXA LOGIN */
 .container {
-    width: 320px;
+    width: 100%;
+    max-width: 350px;
     padding: 30px;
     border-radius: 15px;
 
@@ -29,28 +30,34 @@ body {
 
 /* 🧠 TÍTULO */
 h1 {
-    margin-bottom: 26px;
+    margin-bottom: 10px;
     letter-spacing: 1px;
+}
+
+.container p:first-of-type {
+    margin-bottom: 20px;
+    opacity: 0.8;
 }
 
 /* INPUTS */
 input {
-    width: 95%;
-    padding: 10px;
-    margin: 12px 0;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
 
     border-radius: 8px;
     border: none;
 
     background: rgba(255,255,255,0.15);
     color: white;
+    font-size: 16px; /* 🔥 evita zoom no celular */
 }
 
 /* BOTÃO */
 button {
-    width: 105%;
+    width: 100%;
     padding: 14px;
-    margin-top: 16px;
+    margin-top: 15px;
 
     border-radius: 8px;
     border: none;
@@ -64,7 +71,7 @@ button {
 }
 
 button:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
     box-shadow: 0 0 15px #00bfff;
 }
 
@@ -97,4 +104,29 @@ p:hover {
     text-align: center;
     font-size: 12px;
     opacity: 0.6;
+}
+
+/* 🔥 MOBILE */
+@media (max-width: 768px) {
+
+    .container {
+        width: 90%;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    input {
+        padding: 14px;
+    }
+
+    button {
+        padding: 14px;
+    }
+
+    .footer {
+        font-size: 10px;
+    }
 }
