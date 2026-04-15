@@ -75,7 +75,7 @@ def register(user: User, db: Session = Depends(get_db)):
 # LOGIN
 # =========================
 @router.post("/login")
-def login(user: LoginInput, db: Session = Depends(get_db)):
+def login(user: UserLogin, db: Session = Depends(get_db)):
 
     db_user = db.query(DBUser).filter(DBUser.username == user.username).first()
 
