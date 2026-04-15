@@ -103,8 +103,7 @@ def login(user: User, db: Session = Depends(get_db)):
 # =========================
 
 @router.post("/command")
-def command(command: Command):
-
+def command(data: CommandInput, current_user=Depends(get_current_user)):
     payload = decode_token(command.token)
     if not payload:
         raise HTTPException(status_code=401, detail="Token inválido")
