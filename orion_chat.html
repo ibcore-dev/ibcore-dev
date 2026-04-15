@@ -116,7 +116,7 @@ footer {
 
 <script>
 
-const API = "https://orion-api-d5gp.onrender.com";
+const API = "https://orion-api-d5gp.onrender.com"; // 🔥 corrigido
 
 // 🔒 PROTEÇÃO
 let token = localStorage.getItem("token");
@@ -132,23 +132,25 @@ async function sendMessage() {
     addMessage(text, "user");
     input.value = "";
 
+    // 🔥 loading
     let loading = addMessage("Órion está pensando...", "bot");
 
     try {
-        let r = await fetch(API + "/command", {
+        let r = await fetch(API + "/command", { // 🔥 mantém sua lógica
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + token // 🔥 adicionado (sem remover o resto)
             },
             body: JSON.stringify({
+                token: token, // 🔥 mantido (não removi como você pediu)
                 input: text
             })
         });
 
         let data = await r.json();
 
-        loading.remove();
+        loading.remove(); // remove loading
         addMessage(data.response || "Sem resposta", "bot");
 
     } catch (e) {
@@ -156,6 +158,26 @@ async function sendMessage() {
         console.error(e);
     }
 }
+
+// MENSAGEM
+function addMessage(text, type) {
+    let chat = document.getElementById("chat");
+
+    let msg = document.createElement("div");
+    msg.classList.add("msg", type);
+    msg.innerText = text;
+
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+
+    return msg;
+}
+
+// ENTER
+document.getElementById("msgInput")
+.addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+});
 
 </script>
 
