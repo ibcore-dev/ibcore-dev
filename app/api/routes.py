@@ -28,7 +28,7 @@ UPLOAD_DIR = "uploads"
 class User(BaseModel):
     username: str
     password: str
-    
+
 
 class UserLogin(BaseModel):
     username: str
@@ -233,7 +233,10 @@ def teste():
 # =========================
 
 @router.get("/admin/dashboard")
-def admin_dashboard(db: Session = Depends(get_db)):
+def admin_dashboard(
+    current_user: DBUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
 
     usuarios = db.query(DBUser).count()
 
@@ -255,7 +258,10 @@ def admin_dashboard(db: Session = Depends(get_db)):
     }
 
 @router.get("/admin/usuarios")
-def listar_usuarios(db: Session = Depends(get_db)):
+def listar_usuarios(
+    current_user: DBUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
 
     users = db.query(DBUser).all()
     lista = [user.username for user in users]
@@ -263,7 +269,6 @@ def listar_usuarios(db: Session = Depends(get_db)):
     return {
         "usuarios": lista
     }
-
 
 @router.post("/posts/create")
 def create_post(
