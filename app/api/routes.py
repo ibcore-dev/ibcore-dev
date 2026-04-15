@@ -25,15 +25,11 @@ UPLOAD_DIR = "uploads"
 # =========================
 # MODELS
 # =========================
-from pydantic import BaseModel
 
 class UserLogin(BaseModel):
     username: str
     password: str
 
-class User(BaseModel):
-    username: str
-    password: str
 
 class CommandInput(BaseModel):
     input: str
@@ -101,15 +97,15 @@ def login(user: User, db: Session = Depends(get_db)):
 # COMMAND
 # =========================
 
+class CommandInput(BaseModel):
+    input: str
+
+
 @router.post("/command")
-def command(data: Command, current_user=Depends(get_current_user)):
+def command(data: CommandInput, current_user: DBUser = Depends(get_current_user)):
 
-    payload = decode_token(data.token)
-
-    if not payload:
-        raise HTTPException(status_code=401, detail="Token inválido")
-
-    username = payload["sub"]
+    # 🔥 usa usuário já autenticado
+    username = current_user.username
 
     response = engine.process(username, data.input)
 

@@ -116,23 +116,49 @@ footer {
 
 <script>
 
-const API = "https://orion-api-d5gp.onrender.com"; // 🔥 corrigido
+const API = "https://orion-api-d5gp.onrender.com";
 
 // 🔒 PROTEÇÃO
 let token = localStorage.getItem("token");
-if (!token) window.location.href = "index.html";
 
-// ENVIAR
+if (!token) {
+    alert("Você precisa fazer login primeiro");
+    window.location.href = "index.html";
+}
+
+// DEBUG
+console.log("TOKEN NO CHAT:", token);
+
+// =========================
+// 💬 ADICIONAR MENSAGEM
+// =========================
+function addMessage(text, type) {
+
+    let chat = document.getElementById("chat");
+
+    let msg = document.createElement("div");
+    msg.classList.add("msg", type);
+    msg.innerText = text;
+
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+
+    return msg;
+}
+
+// =========================
+// 🚀 ENVIAR MENSAGEM
+// =========================
 async function sendMessage() {
 
     let input = document.getElementById("msgInput");
     let text = input.value.trim();
+
     if (!text) return;
 
     addMessage(text, "user");
     input.value = "";
 
-    // 🔥 loading
     let loading = addMessage("Órion está pensando...", "bot");
 
     try {
@@ -149,7 +175,13 @@ async function sendMessage() {
 
         let data = await r.json();
 
-        loading.remove(); // remove loading
+        loading.remove();
+
+        if (!r.ok) {
+            addMessage(data.detail || "Erro no servidor", "bot");
+            return;
+        }
+
         addMessage(data.response || "Sem resposta", "bot");
 
     } catch (e) {
@@ -158,21 +190,9 @@ async function sendMessage() {
     }
 }
 
-// MENSAGEM
-function addMessage(text, type) {
-    let chat = document.getElementById("chat");
-
-    let msg = document.createElement("div");
-    msg.classList.add("msg", type);
-    msg.innerText = text;
-
-    chat.appendChild(msg);
-    chat.scrollTop = chat.scrollHeight;
-
-    return msg;
-}
-
-// ENTER
+// =========================
+// ⌨️ ENTER
+// =========================
 document.getElementById("msgInput")
 .addEventListener("keypress", e => {
     if (e.key === "Enter") sendMessage();
