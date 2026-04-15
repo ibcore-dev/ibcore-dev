@@ -1,12 +1,11 @@
 const API = "https://orion-api-d5gp.onrender.com";
 
-// =========================
-// 🔐 LOGIN
-// =========================
 async function login() {
 
-    let username = document.getElementById("loginUser").value;
-    let password = document.getElementById("loginPass").value;
+    let username = document.getElementById("loginUser").value.trim();
+    let password = document.getElementById("loginPass").value.trim();
+
+    console.log("ENVIANDO:", username, password); // DEBUG
 
     if (!username || !password) {
         alert("Preencha usuário e senha");
@@ -27,26 +26,22 @@ async function login() {
 
         let data = await r.json();
 
+        console.log("RESPOSTA:", data); // DEBUG
+
         if (!r.ok) {
-            alert(data.detail || "Login inválido");
+            alert(JSON.stringify(data)); // 🔥 MOSTRA ERRO REAL
             return;
         }
 
-        // 🔥 SALVA TOKEN
         localStorage.setItem("token", data.access_token);
-
-        // 🔥 SALVA USUÁRIO
         localStorage.setItem("username", username);
 
-        console.log("TOKEN SALVO:", data.access_token);
+        alert("Login OK");
 
-        alert("Login realizado com sucesso!");
-
-        // 🚀 REDIRECIONA
         window.location.href = "orion_chat.html";
 
     } catch (e) {
-        alert("Erro de conexão com servidor");
-        console.error(e);
+        console.error("ERRO:", e);
+        alert("Erro de conexão");
     }
 }
