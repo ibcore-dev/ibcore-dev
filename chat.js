@@ -8,7 +8,6 @@ async function send() {
     if (!message) return;
 
     addMessage(message, "user");
-
     input.value = "";
 
     let token = localStorage.getItem("token");
@@ -32,7 +31,13 @@ async function send() {
 
         let data = await r.json();
 
-        addMessage(data.response, "orion");
+        // 🔥 TRATAMENTO DE ERRO
+        if (!r.ok) {
+            addMessage(data.detail || "Erro no servidor", "orion");
+            return;
+        }
+
+        addMessage(data.response || "Sem resposta", "orion");
 
     } catch (e) {
         addMessage("Erro ao conectar com o Órion", "orion");
