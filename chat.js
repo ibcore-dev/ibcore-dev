@@ -1,19 +1,4 @@
-const API = "http://127.0.0.1:8000/command";
-
-function addMessage(text, sender) {
-
-    let wrapper = document.createElement("div");
-    wrapper.className = sender;
-
-    let bubble = document.createElement("div");
-    bubble.innerText = text;
-
-    wrapper.appendChild(bubble);
-
-    document.getElementById("messages").appendChild(wrapper);
-
-    document.getElementById("messages").scrollTop = 9999;
-}
+const API = "https://orion-api-d5gp.onrender.com/command";
 
 async function send() {
 
@@ -37,10 +22,10 @@ async function send() {
         let r = await fetch(API, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
             },
             body: JSON.stringify({
-                token: token,
                 input: message
             })
         });
@@ -51,5 +36,6 @@ async function send() {
 
     } catch (e) {
         addMessage("Erro ao conectar com o Órion", "orion");
+        console.error(e);
     }
 }
