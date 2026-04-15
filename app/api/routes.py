@@ -35,11 +35,10 @@ class User(BaseModel):
     username: str
     password: str
 
-class Command(BaseModel):
-    token: str
+class CommandInput(BaseModel):
     input: str
 
-# 🔥 CORREÇÃO PRINCIPAL (OBRIGATÓRIO)
+
 class ProfileUpdate(BaseModel):
     nome: Optional[str] = None
     bio: Optional[str] = None
@@ -103,14 +102,17 @@ def login(user: User, db: Session = Depends(get_db)):
 # =========================
 
 @router.post("/command")
-def command(data: CommandInput, current_user=Depends(get_current_user)):
-    payload = decode_token(command.token)
+def command(data: Command, current_user=Depends(get_current_user)):
+
+    payload = decode_token(data.token)
+
     if not payload:
         raise HTTPException(status_code=401, detail="Token inválido")
 
     username = payload["sub"]
 
-    response = engine.process(username, command.input)
+    response = engine.process(username, data.input)
+
     return {"response": response}
 
 # =========================
