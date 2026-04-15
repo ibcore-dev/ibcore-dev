@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Órion Nexus</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Bem-vindo ao Órion</h1>
+    <p>A Nova Era Começa Agora</p>
+
+    <!-- LOGIN -->
+    <div id="loginBox" class="box active">
+        <input type="text" id="loginUser" placeholder="Usuário">
+        <input type="password" id="loginPass" placeholder="Senha">
+        <button onclick="login()">Entrar</button>
+
+        <p onclick="showRegister()">Criar conta</p>
+        <p onclick="showForgot()">Esqueci minha senha</p>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerBox" class="box">
+        <input type="text" id="regUser" placeholder="Usuário">
+        <input type="password" id="regPass" placeholder="Senha">
+        <button onclick="register()">Registrar</button>
+
+        <p onclick="showLogin()">Voltar</p>
+    </div>
+
+    <!-- FORGOT -->
+    <div id="forgotBox" class="box">
+        <input type="text" id="forgotUser" placeholder="Usuário">
+        <button onclick="forgot()">Gerar token</button>
+
+        <p onclick="showLogin()">Voltar</p>
+    </div>
+
+</div>
+
+<div class="footer">
+    © 2026 IB Core Systems | Fundador Thyago Braga
+</div>
+
+<script src="auth.js"></script>
+
+</body>
+</html>
