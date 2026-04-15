@@ -76,19 +76,12 @@ def register(user: User, db: Session = Depends(get_db)):
 # =========================
 
 @router.post("/login")
-def login(user: User, db: Session = Depends(get_db)):
+def login(user: LoginInput, db: Session = Depends(get_db)):
 
     db_user = db.query(DBUser).filter(DBUser.username == user.username).first()
 
-    if not db_user:
-        raise HTTPException(status_code=401, detail="Usuário não encontrado")
-
-    try:
-        if not verify_password(user.password, db_user.hashed_password):
-            raise HTTPException(status_code=401, detail="Senha incorreta")
-    except Exception as e:
-        print("ERRO VERIFY:", e)
-        raise HTTPException(status_code=500, detail="Erro interno na verificação de senha")
+    if not db_user or not verify_password(user.password, db_user.hashed_password):
+        raise HTTPException(status_code=401, detail="Credenciais inválidas")
 
     token = create_token({"sub": str(db_user.id)})
 
@@ -96,10 +89,6 @@ def login(user: User, db: Session = Depends(get_db)):
 # =========================
 # COMMAND
 # =========================
-
-class CommandInput(BaseModel):
-    input: str
-
 
 @router.post("/command")
 def command(data: CommandInput, current_user: DBUser = Depends(get_current_user)):
