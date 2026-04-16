@@ -736,7 +736,7 @@ def build_response(
     if topic in ["tecnologia", "projeto"]:
         use_llm = True
 
-    use_llm = False
+    use_llm = tru
 
     if intent in ["pergunta", "analise"]:
         use_llm = True

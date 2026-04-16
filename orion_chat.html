@@ -143,8 +143,14 @@ footer {
 
 const API = "https://orion-api-d5gp.onrender.com";
 
-// 🔒 PROTEÇÃO
-let token = localStorage.getItem("token");
+// =========================
+// 🔒 PROTEÇÃO DE SESSÃO
+// =========================
+function getToken() {
+    return localStorage.getItem("token");
+}
+
+let token = getToken();
 
 if (!token) {
     alert("Você precisa fazer login primeiro");
@@ -190,6 +196,16 @@ async function sendMessage() {
     let loading = addMessage("Órion está pensando...", "bot");
 
     try {
+
+        // 🔥 SEMPRE ATUALIZA TOKEN
+        const token = getToken();
+
+        if (!token) {
+            loading.innerText = "Sessão expirada. Faça login novamente.";
+            window.location.href = "index.html";
+            return;
+        }
+
         let r = await fetch(API + "/command", {
             method: "POST",
             headers: {
@@ -201,16 +217,39 @@ async function sendMessage() {
             })
         });
 
-        let data = await r.json();
+        let data;
+
+        try {
+            data = await r.json();
+        } catch {
+            loading.remove();
+            addMessage("Erro ao interpretar resposta do servidor", "bot");
+            return;
+        }
 
         loading.remove();
+
+        // 🔥 TRATAMENTO DE 401 (TOKEN EXPIRADO)
+        if (r.status === 401) {
+            addMessage("Sessão expirou. Faça login novamente.", "bot");
+            localStorage.removeItem("token");
+            window.location.href = "index.html";
+            return;
+        }
 
         if (!r.ok) {
             addMessage(data.detail || "Erro no servidor", "bot");
             return;
         }
 
-        addMessage(data.response || "Sem resposta", "bot");
+        console.log("RESPOSTA DA API:", data);
+
+        // 🔥 GARANTE RESPOSTA SEMPRE
+        if (data && data.response && data.response.trim() !== "") {
+            addMessage(data.response, "bot");
+        } else {
+            addMessage("Tô contigo. Me fala de novo.", "bot");
+        }
 
     } catch (e) {
         loading.innerText = "Erro ao conectar com o Órion";
