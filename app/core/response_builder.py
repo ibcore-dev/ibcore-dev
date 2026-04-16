@@ -615,7 +615,7 @@ def build_response(
 
         respostas = [
             f"{base_name}, percebo que isso está mexendo com você.",
-            f"{base_name}, quer explorar melhor esse sentimento?",
+            f"{base_name}, Se quiser, podemos explorar melhor esse sentimento.",
             f"{base_name}, isso parece estar pesando internamente."
         ]
 
@@ -677,7 +677,7 @@ def build_response(
             analise_padrao,
             tom_emocional,
             continuidade_relacional,
-            "Qual caminho você está mais inclinado a seguir?",
+            Você precisa escolher um caminho com base nisso.,
             urgencia,
             intencao_texto,
             continuidade_episodio,
@@ -769,7 +769,9 @@ def build_response(
     - Se for técnico → explique de forma simples, prática e direta
     - Se for problema → já vá para diagnóstico ou solução
     - Se for conversa → seja leve, mas com conteúdo
-    - Se fizer sentido → faça uma pergunta curta no final pra continuar
+    - Só faça pergunta se for realmente necessário
+    - Priorize sempre responder completamente antes de perguntar
+    - Evite terminar respostas com pergunta
 
     REGRAS CRÍTICAS:
 
@@ -812,8 +814,14 @@ def build_response(
         llm_response = generate_llm_response(prompt)
 
         if llm_response:
-            return llm_response.strip()
+            resposta_final = llm_response.strip()
 
+            # 🔥 REMOVE PERGUNTA NO FINAL (INTELIGENTE)
+            if resposta_final.endswith("?"):
+                if intent not in ["exploracao", "reflexao"]:
+                    resposta_final = resposta_final.rstrip("?") + "."
+
+            return resposta_final
 
     # =================================================
     # FALLBACK (SÓ SE NÃO USAR LLM)
