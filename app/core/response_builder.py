@@ -802,9 +802,11 @@ def build_response(
     Responda como o Órion.
     """
 
-    # =================================================
+   # =================================================
     # CHAMADA LLM (PRIORIDADE TOTAL)
     # =================================================
+
+    resposta_final = None  # 🔥 garante que a variável sempre exista
 
     if use_llm:
 
@@ -814,36 +816,40 @@ def build_response(
 
         if llm_response:
             resposta_final = llm_response.strip()
-    
+
     # =================================================
     # 🔒 FILTRO DE RESPOSTA (ANTI-QUEBRA DE PERSONALIDADE)
     # =================================================
 
-    bloqueadas = [
-        "não vou responder mais",
-        "preciso de mais informações",
-        "como assistente",
-        "sou apenas uma ia",
-        "não tenho acesso",
-        "não posso ajudar com isso"
-    ]
+    if resposta_final:
 
-    resposta_lower = resposta_final.lower()
+        bloqueadas = [
+            "não vou responder mais",
+            "preciso de mais informações",
+            "como assistente",
+            "sou apenas uma ia",
+            "não tenho acesso",
+            "não posso ajudar com isso"
+        ]
 
-    for b in bloqueadas:
-        if b in resposta_lower:
-            resposta_final = resposta_final.replace(b, "")        
+        resposta_lower = resposta_final.lower()
 
-            # 🔥 REMOVE PERGUNTA NO FINAL (INTELIGENTE)
-            if resposta_final.endswith("?"):
-                if intent not in ["exploracao", "reflexao"]:
-                    resposta_final = resposta_final.rstrip("?") + "."
+        for b in bloqueadas:
+            if b in resposta_lower:
+                resposta_final = resposta_final.replace(b, "")
 
-            return resposta_final
+        # 🔥 REMOVE PERGUNTA NO FINAL (INTELIGENTE)
+        if resposta_final.endswith("?"):
+            if intent not in ["exploracao", "reflexao"]:
+                resposta_final = resposta_final.rstrip("?") + "."
+
+        return resposta_final
 
     # =================================================
-    # FALLBACK (SÓ SE NÃO USAR LLM)
+    # FALLBACK (SE LLM NÃO RESPONDER)
     # =================================================
+
+    if not response or str(response).strip() == "":
+        response = "Tô contigo. Me fala melhor o que você quer."
 
     return response
-    
