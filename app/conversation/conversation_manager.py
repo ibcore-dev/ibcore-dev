@@ -5,7 +5,7 @@ from app.core.context_bridge_engine import bridge_intent_to_memory
 from app.core.spec_learning_engine import detect_and_save_specs
 
 
-def process_conversation(user_input, history):
+def process_conversation(username, user_input, history):
 
     loop_response = detect_loop(user_input, history)
 
@@ -17,7 +17,7 @@ def process_conversation(user_input, history):
 
     text = (user_input or "").lower().strip()
 
-    spec_response = detect_and_save_specs("default_user", text)
+    spec_response = detect_and_save_specs(username, text)
 
     if spec_response:
         return {
@@ -54,7 +54,7 @@ def process_conversation(user_input, history):
     if history and isinstance(history[-1], dict):
         topic = history[-1].get("topic")
 
-    context_hint = bridge_intent_to_memory("default_user", user_input, topic)
+    context_hint = bridge_intent_to_memory(username, user_input, topic)
 
     if detect_greeting(text) and len(text.split()) <= 3:
         response = "Olá! Como posso ajudar você hoje?"
