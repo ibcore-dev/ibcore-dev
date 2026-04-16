@@ -265,7 +265,7 @@ def build_response(
     # =================================================
 
     try:
-        conversation = process_conversation(user_input)
+        conversation = process_conversation(user_input, history)
 
         if conversation and conversation.get("handled"):
             response = conversation.get("response")
@@ -736,7 +736,15 @@ def build_response(
     if topic in ["tecnologia", "projeto"]:
         use_llm = True
 
-    if len(user_input) > 20:
+    use_llm = False
+
+    if intent in ["pergunta", "analise"]:
+        use_llm = True
+
+    if topic in ["tecnologia", "projeto"]:
+        use_llm = True
+
+    if len(user_input) > 25:
         use_llm = True
 
 
@@ -747,61 +755,52 @@ def build_response(
     prompt = f"""
     {abertura}
 
-    Você é o Órion, um assistente inteligente criado por Thyago.
+    Você é o Órion.
+
+    Você conversa como uma pessoa real — natural, inteligente e presente.
 
     Você não é um chatbot.
-    Você é um parceiro — alguém que conversa, pensa junto e ajuda de verdade.
+    Você é alguém que pensa junto, acompanha e conversa de verdade.
 
     Seu estilo:
     - Natural, como uma conversa real
-    - Inteligente, mas sem parecer arrogante
+    - Inteligente, sem parecer forçado
     - Direto, sem enrolação
-    - Próximo, sem exagero
-    - Nada de linguagem robótica ou formal
+    - Próximo, mas sem exagero
+    - Sem linguagem robótica ou formal
 
     Como você fala:
     - Pode usar expressões naturais: "boa", "entendi", "faz sentido"
     - Respostas claras, sem texto desnecessário
-    - Evite frases bonitas demais ou genéricas
-    - Nunca puxe saco ou exagere elogios
+    - Não precisa explicar tudo — fale como uma pessoa normal
 
     Comportamento:
-    - Se for técnico → explique de forma simples, prática e direta
-    - Se for problema → já vá para diagnóstico ou solução
-    - Se for conversa → seja leve, mas com conteúdo
-    - Só faça pergunta se for realmente necessário
-    - Priorize sempre responder completamente antes de perguntar
-    - Evite terminar respostas com pergunta
+    - Responda o que o usuário disse
+    - Reaja ao que ele falou (como uma pessoa faria)
+    - Quando fizer sentido, continue a conversa
+    - Pode fazer perguntas naturalmente, sem exagerar
+    - Não precisa ser perfeito — seja real
 
-    REGRAS CRÍTICAS:
-
-    - Nunca diga que o usuário já perguntou algo antes
-    - Nunca evite responder por repetição
-    - Sempre responda a pergunta atual diretamente
-    - Cada pergunta deve ser tratada como válida, mesmo que repetida
-    
-    Regras importantes:
-    - Nunca diga que é uma IA ou modelo
-    - Nunca fale como atendimento automático
-    - Nunca invente informações só pra parecer inteligente
+    Importante:
+    - Nada de frases de IA ("como assistente", etc)
+    - Nada de respostas formais ou engessadas
+    - Nada de textos longos sem necessidade
     - Se não souber algo, seja direto
 
     Postura:
-    - Você ajuda, mas também orienta
-    - Você não concorda com tudo — você pensa
+    - Você ajuda, mas também pensa
+    - Você não concorda com tudo automaticamente
     - Você mantém equilíbrio entre amizade e inteligência
 
     Contexto:
-    - Usuário: {username}
-    - Tema: {topic}
+    Usuário: {username}
+    Tema: {topic}
 
-    Mensagem do usuário:
+    Mensagem:
     {user_input}
 
-    Responda como o Órion, de forma natural, inteligente e próxima.
+    Responda como o Órion.
     """
-
-    response = ""
 
     # =================================================
     # CHAMADA LLM (PRIORIDADE TOTAL)
@@ -815,6 +814,25 @@ def build_response(
 
         if llm_response:
             resposta_final = llm_response.strip()
+    
+    # =================================================
+    # 🔒 FILTRO DE RESPOSTA (ANTI-QUEBRA DE PERSONALIDADE)
+    # =================================================
+
+    bloqueadas = [
+        "não vou responder mais",
+        "preciso de mais informações",
+        "como assistente",
+        "sou apenas uma ia",
+        "não tenho acesso",
+        "não posso ajudar com isso"
+    ]
+
+    resposta_lower = resposta_final.lower()
+
+    for b in bloqueadas:
+        if b in resposta_lower:
+            resposta_final = resposta_final.replace(b, "")        
 
             # 🔥 REMOVE PERGUNTA NO FINAL (INTELIGENTE)
             if resposta_final.endswith("?"):

@@ -23,6 +23,8 @@ from app.core.conversation_goal_engine import detect_goal
 from app.core.dialogue_memory_engine import detect_main_topic, conversation_already_answered
 from database.database import SessionLocal
 from database.models import Profile, User
+from datetime import datetime
+import pytz
 
 # =================================================
 # BIBLIOTECA EMOCIONAL — ORION
@@ -276,6 +278,16 @@ class DecisionEngine:
             raise ValueError("Username não pode ser vazio")
 
         user_input = user_input or ""
+
+    def get_time_brasilia():
+        tz = pytz.timezone("America/Sao_Paulo")
+        now = datetime.now(tz)
+        return now.strftime("%H:%M")
+
+    def get_date_brasilia():
+        tz = pytz.timezone("America/Sao_Paulo")
+        now = datetime.now(tz)
+        return now.strftime("%d de %B de %Y")
         # =================================================
         # SAFE VARIABLES (ANTI-CRASH)
         # =================================================

@@ -184,7 +184,6 @@ def save_profile(username: str, key: str, value: str):
 
 
 def get_profile(username: str, key: str):
-    return None
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
