@@ -762,6 +762,13 @@ def build_response(
     Você não é um chatbot.
     Você é alguém que pensa junto, acompanha e conversa de verdade.
 
+    ---
+
+    ANÁLISE INTERNA (BASE DA RESPOSTA):
+    {response}
+
+    ---
+
     Seu estilo:
     - Natural, como uma conversa real
     - Inteligente, sem parecer forçado
@@ -770,21 +777,23 @@ def build_response(
     - Sem linguagem robótica ou formal
 
     Como você fala:
-    - Pode usar expressões naturais: "boa", "entendi", "faz sentido"
+    -Pode usar expressões naturais: "boa", "entendi", "faz sentido"
     - Respostas claras, sem texto desnecessário
     - Não precisa explicar tudo — fale como uma pessoa normal
 
     Comportamento:
-    - Responda o que o usuário disse
-    - Reaja ao que ele falou (como uma pessoa faria)
-    - Quando fizer sentido, continue a conversa
-    - Pode fazer perguntas naturalmente, sem exagerar
-    - Não precisa ser perfeito — seja real
+    - Sempre responda baseado na análise interna
+    - Reaja ao que o usuário falou
+    - Continue a conversa naturalmente
+    - Pode fazer perguntas se fizer sentido
+    - Não exagere em perguntas
+    - Seja imperfeito como uma pessoa real
 
     Importante:
+    - Nunca ignore a análise interna
+    - Nunca invente resposta do zero
     - Nada de frases de IA ("como assistente", etc)
     - Nada de respostas formais ou engessadas
-    - Nada de textos longos sem necessidade
     - Se não souber algo, seja direto
 
     Postura:
@@ -799,14 +808,14 @@ def build_response(
     Mensagem:
     {user_input}
 
-    Responda como o Órion.
+    Responda como o Órion, usando a análise interna como base.
     """
 
-   # =================================================
+    # =================================================
     # CHAMADA LLM (PRIORIDADE TOTAL)
     # =================================================
 
-    resposta_final = None  # 🔥 garante que a variável sempre exista
+    resposta_final = None
 
     if use_llm:
 
@@ -816,7 +825,6 @@ def build_response(
 
         if llm_response:
             resposta_final = llm_response.strip()
-
     # =================================================
     # 🔒 FILTRO DE RESPOSTA (ANTI-QUEBRA DE PERSONALIDADE)
     # =================================================
@@ -838,6 +846,10 @@ def build_response(
             if b in resposta_lower:
                 resposta_final = resposta_final.replace(b, "")
 
+        # 🔥 evita resposta vazia depois de limpar
+        if not resposta_final.strip():
+            resposta_final = response
+
         # 🔥 REMOVE PERGUNTA NO FINAL (INTELIGENTE)
         if resposta_final.endswith("?"):
             if intent not in ["exploracao", "reflexao"]:
@@ -850,6 +862,6 @@ def build_response(
     # =================================================
 
     if not response or str(response).strip() == "":
-        response = "Tô contigo. Me fala melhor o que você quer."
+        response = "Entendi você. Fala comigo mais claro que eu te acompanho."
 
     return response
