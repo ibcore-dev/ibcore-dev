@@ -279,15 +279,16 @@ class DecisionEngine:
 
         user_input = user_input or ""
 
+ 
+
     def get_time_brasilia():
-        tz = pytz.timezone("America/Sao_Paulo")
-        now = datetime.now(tz)
+        now = datetime.now(ZoneInfo("America/Sao_Paulo"))
         return now.strftime("%H:%M")
 
     def get_date_brasilia():
-        tz = pytz.timezone("America/Sao_Paulo")
-        now = datetime.now(tz)
+        now = datetime.now(ZoneInfo("America/Sao_Paulo"))
         return now.strftime("%d de %B de %Y")
+        
         # =================================================
         # SAFE VARIABLES (ANTI-CRASH)
         # =================================================
