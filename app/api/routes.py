@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Body
 from pydantic import BaseModel
 from typing import Optional
 from sqlalchemy.orm import Session
+import sqlite3
 
 from app.security.hashing import hash_password, verify_password
 from app.security.auth import create_token, decode_token, get_current_user
@@ -16,6 +17,28 @@ from pydantic import BaseModel
 import os
 import shutil
 from uuid import uuid4
+
+
+def log_error(message, route):
+    conn = sqlite3.connect("orion.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS error_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        message TEXT,
+        route TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    cursor.execute("""
+    INSERT INTO error_logs (message, route)
+    VALUES (?, ?)
+    """, (message, route))
+
+    conn.commit()
+    conn.close()
 
 router = APIRouter()
 engine = DecisionEngine()
@@ -96,13 +119,17 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 @router.post("/command")
 def command(data: CommandInput, current_user: DBUser = Depends(get_current_user)):
 
-    # 🔥 usa usuário já autenticado
-    username = current_user.username
+    try:
+        username = current_user.username
 
-    response = engine.process(username, data.input)
+        response = engine.process(username, data.input)
 
-    return {"response": response}
+        return {"response": response}
 
+    except Exception as e:
+        print("🔥 ERRO COMMAND:", e)
+        log_error(str(e), "/command")
+        raise HTTPException(status_code=500, detail="Erro interno no Órion")
 # =========================
 # 🖼️ UPLOAD IMAGEM
 # =========================
@@ -181,7 +208,9 @@ def save_profile(
 
     except Exception as e:
         print("🔥 ERRO SAVE:", e)
+        log_error(str(e), "/profile/save")
         raise HTTPException(status_code=500, detail=str(e))
+        
 
 # =========================
 # 📥 CARREGAR PERFIL
@@ -218,8 +247,8 @@ def get_my_profile(
 
     except Exception as e:
         print("🔥 ERRO REAL:", e)
+        log_error(str(e), "/profile/me")
         raise HTTPException(status_code=500, detail=str(e))
-
 # =========================
 # TESTE
 # =========================
@@ -247,13 +276,16 @@ def admin_dashboard(
     cursor.execute("SELECT COUNT(*) FROM memory")
     mensagens = cursor.fetchone()[0]
 
+    cursor.execute("SELECT COUNT(*) FROM error_logs")
+    erros = cursor.fetchone()[0]
+
     conn.close()
 
     return {
         "usuarios": usuarios,
         "mensagens": mensagens,
         "ia": mensagens,
-        "erros": 0,
+        "erros": erros,
         "historico": [5, 10, 8, 12, 15]
     }
 
@@ -269,6 +301,7 @@ def listar_usuarios(
     return {
         "usuarios": lista
     }
+    
 
 @router.post("/posts/create")
 def create_post(
@@ -293,7 +326,9 @@ def create_post(
 
     except Exception as e:
         print("🔥 ERRO REAL:", e)
+        log_error(str(e), "/posts/create")
         raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/posts/feed")
 def get_feed(db: Session = Depends(get_db)):
 
@@ -588,3 +623,22 @@ def suggestions(current_user: DBUser = Depends(get_current_user), db: Session = 
         }
         for u in users
     ]
+
+@router.get("/admin/errors")
+def listar_erros(current_user: DBUser = Depends(get_current_user)):
+
+    conn = sqlite3.connect("orion.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT message, route, timestamp
+    FROM error_logs
+    ORDER BY id DESC
+    LIMIT 10
+    """)
+
+    erros = cursor.fetchall()
+
+    conn.close()
+
+    return {"erros": erros}

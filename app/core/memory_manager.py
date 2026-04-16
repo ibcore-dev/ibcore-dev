@@ -80,6 +80,18 @@ def init_db():
     """)
 
     # =========================
+    # 🚨 LOG DE ERROS
+    # =========================
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS error_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        message TEXT,
+        route TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    # =========================
     # 🧠 PERFIL DO USUÁRIO (APRENDIZADO)
     # =========================
     cursor.execute("""
