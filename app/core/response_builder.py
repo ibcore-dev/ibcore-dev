@@ -615,7 +615,7 @@ def build_response(
 
         respostas = [
             f"{base_name}, percebo que isso está mexendo com você.",
-            f"{base_name}, Se quiser, podemos explorar melhor esse sentimento.",
+            f"{base_name}, quer explorar melhor esse sentimento?",
             f"{base_name}, isso parece estar pesando internamente."
         ]
 
@@ -677,7 +677,7 @@ def build_response(
             analise_padrao,
             tom_emocional,
             continuidade_relacional,
-            Você precisa escolher um caminho com base nisso.,
+            "Qual caminho você está mais inclinado a seguir?",
             urgencia,
             intencao_texto,
             continuidade_episodio,
