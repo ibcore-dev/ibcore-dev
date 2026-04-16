@@ -803,58 +803,54 @@ def build_response(
     # CHAMADA LLM (PRIORIDADE TOTAL)
     # =================================================
 
-    resposta_final = None
-
-    if use_llm:
-
-        print("🔥 LLM CHAMADO")
-
-        llm_response = generate_llm_response(prompt)
-
-        print("🧠 LLM RESPONSE:", llm_response)
-
-        if llm_response and str(llm_response).strip() != "":
-            resposta_final = llm_response.strip()
-        else:
-            print("⚠️ LLM NÃO RESPONDEU")
-    
     # =================================================
-    # 🔒 FILTRO DE RESPOSTA (ANTI-QUEBRA DE PERSONALIDADE)
-    # =================================================
+# CHAMADA LLM
+# =================================================
 
-    if resposta_final:
+resposta_final = None
 
-        bloqueadas = [
-            "não vou responder mais",
-            "preciso de mais informações",
-            "como assistente",
-            "sou apenas uma ia",
-            "não tenho acesso",
-            "não posso ajudar com isso"
-        ]
+if use_llm:
 
-        resposta_lower = resposta_final.lower()
+    print("🔥 LLM CHAMADO")
 
-        for b in bloqueadas:
-            if b in resposta_lower:
-                resposta_final = resposta_final.replace(b, "")
+    llm_response = generate_llm_response(prompt)
 
-        # 🔥 evita resposta vazia depois de limpar
-        if not resposta_final.strip():
-            resposta_final = response
+    print("🧠 LLM RESPONSE:", llm_response)
 
-        # 🔥 REMOVE PERGUNTA NO FINAL (INTELIGENTE)
-        if resposta_final.endswith("?"):
-            if intent not in ["exploracao", "reflexao"]:
-                resposta_final = resposta_final.rstrip("?") + "."
+    if llm_response and str(llm_response).strip() != "":
+        resposta_final = llm_response.strip()
 
-        return resposta_final
+# =================================================
+# FILTRO + RETORNO
+# =================================================
 
-    # =================================================
-    # FALLBACK (SE LLM NÃO RESPONDER)
-    # =================================================
+if resposta_final:
 
-    if not response or str(response).strip() == "":
-        response = "Entendi você. Fala comigo mais claro que eu te acompanho."
+    bloqueadas = [
+        "não vou responder mais",
+        "preciso de mais informações",
+        "como assistente",
+        "sou apenas uma ia",
+        "não tenho acesso",
+        "não posso ajudar com isso"
+    ]
 
-    return response
+    for b in bloqueadas:
+        if b in resposta_final.lower():
+            resposta_final = resposta_final.replace(b, "")
+
+    if not resposta_final.strip():
+        resposta_final = response
+
+    return resposta_final
+
+# =================================================
+# 🔥 GARANTIA DE RESPOSTA (ESSENCIAL)
+# =================================================
+
+if not response or str(response).strip() == "":
+    print("⚠️ FALLBACK ATIVADO")
+
+    return "Tô contigo. Me fala direito o que você precisa."
+
+return response
