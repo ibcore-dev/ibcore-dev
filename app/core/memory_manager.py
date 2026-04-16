@@ -79,6 +79,18 @@ def init_db():
     )
     """)
 
+    # =========================
+    # 🧠 PERFIL DO USUÁRIO (APRENDIZADO)
+    # =========================
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS user_profile (
+        username TEXT,
+        key TEXT,
+        value TEXT,
+        PRIMARY KEY (username, key)
+    )
+    """)
+
     conn.commit()
     conn.close()
 
