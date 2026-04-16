@@ -713,14 +713,10 @@ def build_response(
         )
 
     # =================================================
-    # DECISÃO DE USO DO LLM (ANTES DE QUALQUER RESPOSTA FINAL)
+    # DECISÃO DE USO DO LLM
     # =================================================
 
-    use_llm = True
-
-    # =================================================
-    # ABERTURA NATURAL (AQUI 👇)
-    # =================================================
+    use_llm = True  # 🔥 FORÇADO (teste)
 
     abertura = random.choice([
         "Boa,",
@@ -729,14 +725,6 @@ def build_response(
         "Hmm,",
         "Certo,"
     ])
-
-    if intent in ["pergunta", "analise"]:
-        use_llm = True
-
-    if topic in ["tecnologia", "projeto"]:
-        use_llm = True
-
-    use_llm = tru
 
     if intent in ["pergunta", "analise"]:
         use_llm = True
@@ -823,8 +811,13 @@ def build_response(
 
         llm_response = generate_llm_response(prompt)
 
-        if llm_response:
+        print("🧠 LLM RESPONSE:", llm_response)
+
+        if llm_response and str(llm_response).strip() != "":
             resposta_final = llm_response.strip()
+        else:
+            print("⚠️ LLM NÃO RESPONDEU")
+    
     # =================================================
     # 🔒 FILTRO DE RESPOSTA (ANTI-QUEBRA DE PERSONALIDADE)
     # =================================================
