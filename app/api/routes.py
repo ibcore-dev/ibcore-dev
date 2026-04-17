@@ -124,6 +124,12 @@ def command(data: CommandInput, current_user: DBUser = Depends(get_current_user)
 
         response = engine.process(username, data.input)
 
+        print("🧠 RESPONSE DO ENGINE:", response)
+
+        if not response or str(response).strip() == "":
+            print("⚠️ RESPONSE VEIO VAZIO NO ROUTES")
+            response = "Tô contigo. Me fala melhor o que você quer."
+
         return {"response": response}
 
     except Exception as e:
