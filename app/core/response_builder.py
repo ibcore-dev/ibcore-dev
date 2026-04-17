@@ -106,13 +106,16 @@ def build_response(
                 if isinstance(h, dict):
                     user_msg = h.get("input", "")
                     ai_msg = h.get("response", "")
+                if isinstance(h, dict):
+                    user_msg = h.get("input", "")
+                    ai_msg = h.get("response", "")
+
                 elif isinstance(h, tuple):
                     user_msg = str(h[0]) if len(h) > 0 else ""
                     ai_msg = str(h[1]) if len(h) > 1 else ""
+
                 else:
                     user_msg, ai_msg = "", ""
-                
-                ai_msg = h.get("response", "")
 
                 if user_msg:
                     context_lines.append(f"Usuário disse: {user_msg}")
@@ -804,45 +807,45 @@ def build_response(
     # =================================================
 
     # =================================================
-# CHAMADA LLM
-# =================================================
+    # CHAMADA LLM
+    # =================================================
 
-resposta_final = None
+    resposta_final = None
 
-if use_llm:
+    if use_llm:
 
-    print("🔥 LLM CHAMADO")
+        print("🔥 LLM CHAMADO")
 
-    llm_response = generate_llm_response(prompt)
+        llm_response = generate_llm_response(prompt)
 
-    print("🧠 LLM RESPONSE:", llm_response)
+        print("🧠 LLM RESPONSE:", llm_response)
 
-    if llm_response and str(llm_response).strip() != "":
-        resposta_final = llm_response.strip()
+        if llm_response and str(llm_response).strip() != "":
+            resposta_final = llm_response.strip()
 
-# =================================================
-# FILTRO + RETORNO
-# =================================================
+    # =================================================
+    # FILTRO + RETORNO
+    # =================================================
 
-if resposta_final:
+    if resposta_final:
 
-    bloqueadas = [
-        "não vou responder mais",
-        "preciso de mais informações",
-        "como assistente",
-        "sou apenas uma ia",
-        "não tenho acesso",
-        "não posso ajudar com isso"
-    ]
+        bloqueadas = [
+            "não vou responder mais",
+            "preciso de mais informações",
+            "como assistente",
+            "sou apenas uma ia",
+            "não tenho acesso",
+            "não posso ajudar com isso"
+        ]
 
-    for b in bloqueadas:
-        if b in resposta_final.lower():
-            resposta_final = resposta_final.replace(b, "")
+        for b in bloqueadas:
+            if b in resposta_final.lower():
+                resposta_final = resposta_final.replace(b, "")
 
-    if not resposta_final.strip():
-        resposta_final = response
+        if not resposta_final.strip():
+            resposta_final = response
 
-    return resposta_final
+        return resposta_final
 
 # =================================================
 # 🔥 GARANTIA DE RESPOSTA (ESSENCIAL)
