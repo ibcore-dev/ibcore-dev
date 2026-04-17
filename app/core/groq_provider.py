@@ -14,26 +14,23 @@ class GroqProvider(LLMProvider):
 
     def generate(self, prompt):
 
-        if not self.client:
-            print("⚠️ LLM desativado (sem API KEY)")
-            return None
-
         try:
-            print("📡 Chamando Groq...")
-
             chat = self.client.chat.completions.create(
                 messages=[
-                    {"role": "user", "content": prompt}
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
                 ],
                 model="llama-3.1-8b-instant"
             )
 
-            resposta = chat.choices[0].message.content
+            if not chat or not chat.choices:
+                print("⚠️ LLM sem resposta válida")
+                return None
 
-            print("🧠 Groq respondeu:", resposta)
-
-            return resposta
+            return chat.choices[0].message.content
 
         except Exception as e:
-            print("❌ Erro Groq:", str(e))
+            print("Erro Groq:", e)
             return None
