@@ -847,13 +847,13 @@ def build_response(
 
         return resposta_final
 
-# =================================================
-# 🔥 GARANTIA DE RESPOSTA (ESSENCIAL)
-# =================================================
+    # =================================================
+    # 🔥 GARANTIA DE RESPOSTA (ESSENCIAL)
+    # =================================================
 
-if not response or str(response).strip() == "":
-    print("⚠️ FALLBACK ATIVADO")
+    if not response or str(response).strip() == "":
+        print("⚠️ FALLBACK ATIVADO")
 
-    return "Tô contigo. Me fala direito o que você precisa."
+        return "Tô contigo. Me fala direito o que você precisa."
 
-return response
+    return response
