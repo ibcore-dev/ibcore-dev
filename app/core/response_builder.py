@@ -809,7 +809,6 @@ def build_response(
 
         if llm_response and str(llm_response).strip() != "":
             resposta_final = llm_response.strip()
-            return resposta_final
     # =================================================
     # FILTRO + RETORNO
     # =================================================
