@@ -356,9 +356,6 @@ def build_response(
 
     prefixo = ""
 
-    if conversation_context:
-        contexto_texto += f" Estamos continuando a conversa anterior. {conversation_context[:200]}"
-    
     if latent_intent == "validacao":
         prefixo = "Vamos validar isso com cuidado. "
 
