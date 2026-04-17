@@ -286,7 +286,7 @@ def build_response(
     if pessoa:
         contexto_texto += f" Você mencionou sua {pessoa} antes."
 
-    if assunto == "orion" and topic not in ["projeto", "geral"]:
+    if assunto == "orion" and topic == "projeto":
         contexto_texto += " Voltando ao projeto Órion."
 
     # =================================================
@@ -349,9 +349,9 @@ def build_response(
 
     prefixo = ""
 
-    if conversation_context:
+    if conversation_context and topic == "projeto" and len(user_input) > 10:
         contexto_texto += " (continuidade de conversa ativa)"
-
+    
     if latent_intent == "validacao":
         prefixo = "Vamos validar isso com cuidado. "
 
