@@ -718,7 +718,7 @@ def build_response(
     # DECISÃO DE USO DO LLM
     # =================================================
 
-    use_llm = True  
+    use_llm = False  
 
     abertura = random.choice([
         "Boa,",
