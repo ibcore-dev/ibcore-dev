@@ -98,7 +98,7 @@ def build_response(
 
     if history and len(history) > 0:
 
-        last_messages = history[-8:]
+        last_messages = history[-12:]
 
         context_lines = []
 
@@ -107,20 +107,13 @@ def build_response(
             try:
                 if isinstance(h, dict):
                     user_msg = h.get("input", "")
-                    ai_msg = h.get("response", "")
-
                 elif isinstance(h, tuple):
                     user_msg = str(h[0]) if len(h) > 0 else ""
-                    ai_msg = str(h[1]) if len(h) > 1 else ""
-
                 else:
-                    user_msg, ai_msg = "", ""
+                    user_msg = ""
 
                 if user_msg:
-                    context_lines.append(f"Usuário disse: {user_msg}")
-
-                if ai_msg:
-                    context_lines.append(f"Órion respondeu: {ai_msg}")
+                    context_lines.append(user_msg)
 
             except:
                 continue
@@ -355,6 +348,9 @@ def build_response(
     # =================================================
 
     prefixo = ""
+
+    if conversation_context:
+    contexto_texto += " (continuidade de conversa ativa)"
 
     if latent_intent == "validacao":
         prefixo = "Vamos validar isso com cuidado. "

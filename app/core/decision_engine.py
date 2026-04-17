@@ -325,7 +325,7 @@ class DecisionEngine:
         if len(user_input.split()) <= 2 and intent == "conversa":
             intent = "resposta"
 
-        history = memory.get_last_messages(username, 25) or []
+        history = memory.get_last_messages(username, 50) or []
 
         main_topic = detect_main_topic(history)
         if main_topic and topic == "geral":
