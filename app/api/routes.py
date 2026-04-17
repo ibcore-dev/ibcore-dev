@@ -126,16 +126,29 @@ def command(data: CommandInput, current_user: DBUser = Depends(get_current_user)
 
         print("🧠 RESPONSE DO ENGINE:", response)
 
-        if not response or str(response).strip() == "":
-            print("⚠️ RESPONSE VEIO VAZIO NO ROUTES")
+        # 🔥 GARANTIA TOTAL DE RESPOSTA (ANTI-NULL)
+        if response is None:
+            print("🚨 ENGINE RETORNOU NONE")
             response = "Tô contigo. Me fala melhor o que você quer."
+
+        elif isinstance(response, str) and response.strip() == "":
+            print("🚨 ENGINE RETORNOU STRING VAZIA")
+            response = "Tô contigo. Me fala melhor o que você quer."
+
+        elif not isinstance(response, str):
+            print("🚨 ENGINE RETORNOU TIPO INVÁLIDO:", type(response))
+            response = str(response)
 
         return {"response": response}
 
     except Exception as e:
         print("🔥 ERRO COMMAND:", e)
         log_error(str(e), "/command")
-        raise HTTPException(status_code=500, detail="Erro interno no Órion")
+
+        # 🔥 NUNCA QUEBRA FRONT
+        return {
+            "response": "Deu um erro aqui, mas continuo contigo. Me manda de novo."
+        }
 # =========================
 # 🖼️ UPLOAD IMAGEM
 # =========================
