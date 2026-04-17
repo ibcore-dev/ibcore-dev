@@ -852,8 +852,7 @@ def build_response(
     # =================================================
 
     if not response or str(response).strip() == "":
-        print("⚠️ FALLBACK ATIVADO")
-
-        return "Tô contigo. Me fala direito o que você precisa."
+        print("⚠️ ENGINE RECEBEU RESPOSTA VAZIA")
+        response = "Tô aqui. Me explica melhor que eu te acompanho."
 
     return response
