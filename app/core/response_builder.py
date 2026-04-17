@@ -88,6 +88,8 @@ def build_response(
     behavior_pattern=None,
     thought=None
 ):
+
+    response = ""
     # =================================================
     # CONTINUIDADE DE CONVERSA
     # =================================================
@@ -103,9 +105,6 @@ def build_response(
         for h in last_messages:
 
             try:
-                if isinstance(h, dict):
-                    user_msg = h.get("input", "")
-                    ai_msg = h.get("response", "")
                 if isinstance(h, dict):
                     user_msg = h.get("input", "")
                     ai_msg = h.get("response", "")
@@ -719,7 +718,7 @@ def build_response(
     # DECISÃO DE USO DO LLM
     # =================================================
 
-    use_llm = True  # 🔥 FORÇADO (teste)
+    use_llm = True  
 
     abertura = random.choice([
         "Boa,",
@@ -801,11 +800,6 @@ def build_response(
 
     Responda como o Órion, usando a análise interna como base.
     """
-
-    # =================================================
-    # CHAMADA LLM (PRIORIDADE TOTAL)
-    # =================================================
-
     # =================================================
     # CHAMADA LLM
     # =================================================
@@ -822,7 +816,7 @@ def build_response(
 
         if llm_response and str(llm_response).strip() != "":
             resposta_final = llm_response.strip()
-
+            return resposta_final
     # =================================================
     # FILTRO + RETORNO
     # =================================================
@@ -847,12 +841,9 @@ def build_response(
 
         return resposta_final
 
-    # =================================================
-    # 🔥 GARANTIA DE RESPOSTA (ESSENCIAL)
-    # =================================================
-
+    # 🔥 GARANTIA FINAL (OBRIGATÓRIO)
     if not response or str(response).strip() == "":
-        print("⚠️ ENGINE RECEBEU RESPOSTA VAZIA")
-        response = "Tô aqui. Me explica melhor que eu te acompanho."
+        print("⚠️ FALLBACK FINAL DO BUILDER")
+        return "Tô contigo. Me fala melhor o que você quer."
 
     return response
