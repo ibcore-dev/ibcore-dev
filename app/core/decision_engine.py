@@ -269,121 +269,82 @@ def detect_intent(text: str):
 class DecisionEngine:
 
     def process(self, username: str, user_input: str):
-        nome = memory.get_profile(username, "nome")
 
+        nome = memory.get_profile(username, "nome")
         if not nome:
-            nome = username  # fallback
+            nome = username
         
         if not username:
             raise ValueError("Username não pode ser vazio")
 
         user_input = user_input or ""
 
- 
-
-    def get_time_brasilia():
-        now = datetime.now(ZoneInfo("America/Sao_Paulo"))
-        return now.strftime("%H:%M")
-
-    def get_date_brasilia():
-        now = datetime.now(ZoneInfo("America/Sao_Paulo"))
-        return now.strftime("%d de %B de %Y")
-        
-        # =================================================
-        # SAFE VARIABLES (ANTI-CRASH)
-        # =================================================
-
+        # ===============================
+        # SAFE INIT
+        # ===============================
         history = []
-        main_topic = None
+        response = ""
+        thought = ""
 
+        # ===============================
+        # GOAL / PLANNER
+        # ===============================
         goal_check = goal_response(username, user_input)
-
         if goal_check:
             return goal_check
 
         text = user_input.lower()
 
         if "plano" in text or "como fazer" in text:
-
             plan_check = planner_response(username)
-
             if plan_check:
                 return plan_check
-        # =====================================
-        # PROGRESS ENGINE
-        # =====================================
 
         if "próximo passo" in text or "proximo passo" in text:
-
             progress = get_progress(username)
-
             if progress:
                 return progress
 
         if "concluí" in text or "finalizei" in text:
-
             return advance_progress(username)
-        
-        response = ""
 
-        thought = ""
-
-        # =================================================
-        # EXTRAÇÃO DE CONHECIMENTO
-        # =================================================
-
-        try:
-            extract_user_knowledge(username, user_input)
-        except Exception:
-            pass
-
-        # =================================================
-        # CONTEXT ENGINE
-        # =================================================
-
+        # ===============================
+        # CONTEXTO
+        # ===============================
         try:
             update_context(username, user_input)
-            conversation_context = get_context(username)
-        except Exception:
-            conversation_context = {}
+        except:
+            pass
 
-        # =================================================
-        # DETECÇÕES PRINCIPAIS
-        # =================================================
-
+        # ===============================
+        # DETECÇÕES
+        # ===============================
         topic = detect_topic(user_input)
         intent = detect_intent(user_input)
 
         if len(user_input.split()) <= 2 and intent == "conversa":
             intent = "resposta"
-        
-        # =================================================
-        # HISTORY + MAIN TOPIC
-        # =================================================
+
         history = memory.get_last_messages(username, 25) or []
 
         main_topic = detect_main_topic(history)
-
         if main_topic and topic == "geral":
             topic = main_topic
-        
-        # detectar emoção primeiro
+
         _, emotional_value = detect_emotional_intensity(user_input)
 
-        # semantic state
         try:
             semantic_state = detect_semantic_state(user_input)
-        except Exception:
+        except:
             semantic_state = None
 
         active_episode = memory.get_active_episode(username)
 
-        # CONTINUITY ENGINE
         continuity = detect_continuity(username, topic, intent)
-        # =================================================
-        # COGNITIVE LOOP
-        # =================================================
 
+        # ===============================
+        # COGNITIVE LOOP
+        # ===============================
         cognitive_state = cognitive_loop(
             topic,
             intent,
@@ -391,128 +352,52 @@ class DecisionEngine:
             continuity
         )
 
-        thought = cognitive_state["thought"]
-        reflection = cognitive_state["reflection"]
-        meta_analysis = cognitive_state["meta"] 
-        
-        # PRIORITY ENGINE
+        thought = cognitive_state.get("thought", "")
+
         priority = calculate_priority(intent, emotional_value, active_episode)
+
         focus_context = determine_focus(
             topic,
             emotional_value,
             intent,
             active_episode
         )
-        
-        # =================================================
-        # IDENTIDADE COGNITIVA BASE
-        # =================================================
 
+        # ===============================
+        # IDENTIDADE
+        # ===============================
         try:
             cognitive_identity = memory.detect_cognitive_identity(username, intent, topic)
-        except Exception:
+        except:
             cognitive_identity = "mentor_equilibrado"
-        try:
-            current_style = memory.detect_user_style(username)
-            memory.save_profile(username, "personality", current_style)
-        except Exception:
-            current_style = None
 
-        history = memory.get_last_messages(username, 25) or []
-
-        # =================================================
-        # DIALOGUE MEMORY ENGINE
-        # =================================================
-
-        main_topic = detect_main_topic(history)
-
-        already_asked = conversation_already_answered(history, user_input)
-
-        if already_asked:
-            thought = "Já falamos sobre isso, mas vamos aprofundar."
-        
-        # =================================================
-        # CONVERSATION INTELLIGENCE ENGINE
-        # =================================================
-
+        # ===============================
+        # CONTINUAÇÃO AUTOMÁTICA
+        # ===============================
         pending_question = detect_pending_question(history)
-
         continuation = continue_conversation(pending_question, user_input)
 
         if continuation:
             return continuation
-        # =================================================
-        # CONVERSATION GOAL ENGINE
-        # =================================================
 
-        goal = detect_goal(history)
-
+        # ===============================
+        # PERFIL
+        # ===============================
         profile = get_user_profile(username)
 
         if profile and profile.nome:
-           nome_real = profile.nome
+            nome_real = profile.nome
         else:
             nome_real = username
-        
-        mode = "normal"
-        # priority já definido pelo priority_engine
 
-        active_episode = memory.get_active_episode(username)
+        mode = "normal"
 
         if active_episode:
             priority = "alta"
-        
-        # =================================================
-        # SELF EVOLUTION
-        # =================================================
 
-        try:
-            learn_from_conversation(username, user_input)
-        except Exception:
-            pass
-
-        
-        # =================================================
-        # ATTENTION ENGINE
-        # =================================================
-
-        dominant_context, attention_weights = calculate_attention(
-            topic=topic,
-            intent=intent,
-            emotional_score=emotional_value,
-            active_episode=active_episode,
-            semantic_state=semantic_state
-        )
-        
-        # =================================================
-        # AJUSTE SEMÂNTICO
-        # =================================================
-
-        if semantic_state == "fadiga":
-            emotional_value = max(emotional_value or 0, 5)
-
-        elif semantic_state == "ansiedade":
-            emotional_value = max(emotional_value or 0, 7)
-
-        elif semantic_state == "duvida":
-            intent = intent or "analise"
-
-        if dominant_context == "emocional":
-            mode = "reflexivo"
-
-        elif dominant_context == "execucao":
-            mode = "execucao"
-
-        elif dominant_context == "decisao":
-            mode = "diretivo"
-
-        elif dominant_context == "episodio":
-            mode = "estrategico"
-
-        # =================================================
+        # ===============================
         # MEMÓRIA
-        # =================================================
-
+        # ===============================
         memory.update_user_state(
             username,
             topic,
@@ -520,145 +405,18 @@ class DecisionEngine:
             emotional_value,
             intent
         )
+
         try:
             save_episode(username, topic, emotional_value, intent, user_input)
-        except Exception:
-            pass
-        relational_context = build_relational_context(username)
-
-        behavior_pattern = detect_behavior_pattern(username)
-        learning_pattern = detect_learning_pattern(username)
-        if not cognitive_identity:
-            cognitive_identity = "mentor_equilibrado"
-        cognitive_identity = adapt_cognitive_identity(
-            cognitive_identity,
-            behavior_pattern
-        )
-        if learning_pattern == "analitico":
-            cognitive_identity = "mentor_equilibrado"
-
-        elif learning_pattern == "executor":
-            cognitive_identity = "executor_pragmatico"
-
-        elif learning_pattern == "decisor":
-            cognitive_identity = "estrategico_firme"
-
-        elif learning_pattern == "emocional":
-            cognitive_identity = "apoio_emocional"
-        
-        # =================================================
-        # GERAR RESPOSTA
-        # =================================================
-        
-        episode = recall_episode(username)
-
-        tech_response = check_technical_memory(username, user_input)
-
-        if tech_response:
-            return tech_response
-
-        # =================================================
-        # TECHNICAL MEMORY RECALL
-        # =================================================
-
-        peso = None
-        # =================================================
-        # MEMORY RECALL TRIGGER
-        # =================================================
-
-        memory_hint = ""
-
-        try:
-            previous_state = memory.get_user_state(username)
         except:
-            previous_state = None
+            pass
 
-        last_topic = None
+        relational_context = build_relational_context(username)
+        behavior_pattern = detect_behavior_pattern(username)
 
-        if previous_state:
-            last_topic = previous_state[0]
-
-        if last_topic == topic and topic != "geral":
-            memory_hint = "Você mencionou isso anteriormente."
-
-        elif last_topic and topic == "projeto":
-            memory_hint = "Na última conversa você comentou sobre isso."
-        if memory_hint:
-            thought = (memory_hint + " " + (thought or "")).strip()
-        
-        # =================================================
-        # TECHNICAL MEMORY RECALL
-        # =================================================
-
-        peso = memory.get_profile(username, "spec_peso")
-
-        if peso and "peso" in user_input.lower():
-
-            response = f"O peso do drone está definido como {peso}."
-
-            try:
-                memory.save_memory(username, user_input, response, topic)
-            except Exception:
-                pass
-
-            return response
-        
-        # =================================================
-        # CONTEXT FOCUS ENGINE
-        # =================================================
-
-        if focus_context == "emocional":
-            thought = "Vamos focar primeiro no que você está sentindo."
-
-        elif focus_context == "execucao":
-            thought = "Vamos transformar isso em ação prática."
-
-        elif focus_context == "episodio":
-            thought = "Esse assunto parece importante na sua jornada."
-
-        elif focus_context == "projeto":
-            thought = "Vamos analisar o projeto com clareza."
-
-        elif focus_context == "financeiro":
-            thought = "Vamos olhar isso com visão estratégica."
-       
-        # =================================================
-        # INTELIGÊNCIA CONTEXTUAL
-        # =================================================
-
-        if not thought:
-
-            if topic == "projeto" and intent == "pergunta":
-                thought = "Vamos analisar o projeto com clareza."
-
-            elif topic == "projeto" and intent == "decisao":
-                thought = "Essa decisão pode impactar o desenvolvimento do sistema."
-
-            elif topic == "emocional":
-                thought = "O foco agora deve ser o equilíbrio emocional."
-
-            elif intent == "analise":
-                thought = "Vamos analisar os cenários possíveis."
-        
-        # =================================================
-        # STRATEGIC QUESTION ENGINE
-        # =================================================
-
-        strategic_question = ""
-
-        if intent == "pergunta" and topic in ["projeto", "negocio", "financeiro"]:
-            thought += " Vamos estruturar isso com clareza."
-            strategic_question = " Qual parte disso você considera mais crítica agora?"
-
-        elif intent == "analise":
-            strategic_question = " Quais cenários você acredita que precisam ser analisados primeiro?"
-
-        elif intent == "decisao":
-            strategic_question = " Qual fator pesa mais nessa decisão agora?"
-
-        elif topic == "negocio":
-            strategic_question = " Qual resultado você espera alcançar com isso?"
-    
+        # ===============================
+        # BUILD RESPONSE
+        # ===============================
         response = build_response(
             user_input=user_input,
             username=username,
@@ -675,18 +433,28 @@ class DecisionEngine:
             thought=thought
         )
 
-        # garantir resposta mínima
         if not response:
-            response = "Entendi. Pode me explicar um pouco mais sobre isso?"
+            response = "Entendi. Pode me explicar melhor?"
 
-        # adicionar pergunta estratégica
-        if strategic_question:
-            response = response + strategic_question
-
-        # salvar memória
         try:
             memory.save_memory(username, user_input, response, topic)
-        except Exception:
+        except:
             pass
 
         return response
+
+    # ===============================
+    # UTILITÁRIOS (FORA DO PROCESS)
+    # ===============================
+
+    def get_time_brasilia(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        now = datetime.now(ZoneInfo("America/Sao_Paulo"))
+        return now.strftime("%H:%M")
+
+    def get_date_brasilia(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        now = datetime.now(ZoneInfo("America/Sao_Paulo"))
+        return now.strftime("%d de %B de %Y")
