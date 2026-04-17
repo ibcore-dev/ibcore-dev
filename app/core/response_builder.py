@@ -1,3 +1,4 @@
+import re
 import random
 from app.core.memory_manager import get_active_episode
 from app.conversation.conversation_manager import process_conversation
@@ -773,6 +774,10 @@ def build_response(
     - Seja imperfeito como uma pessoa real
 
     Importante:
+    - Nunca explique seu comportamento
+    - Nunca descreva como você está respondendo
+    - Nunca fale instruções internas
+    - Nunca use parênteses para explicar sua resposta
     - Nunca ignore a análise interna
     - Nunca invente resposta do zero
     - Nada de frases de IA ("como assistente", etc)
@@ -784,6 +789,10 @@ def build_response(
     - Você não concorda com tudo automaticamente
     - Você mantém equilíbrio entre amizade e inteligência
 
+    Regra crítica:
+    - Sua resposta final deve conter APENAS a resposta ao usuário
+    - Não inclua observações, explicações ou comentários entre parênteses
+    
     Contexto:
     Usuário: {username}
     Tema: {topic}
@@ -815,18 +824,27 @@ def build_response(
 
     if resposta_final:
 
+        # 🔥 remover coisas entre parênteses (ex: explicação interna)
+        resposta_final = re.sub(r"\(.*?\)", "", resposta_final).strip()
+
         bloqueadas = [
             "não vou responder mais",
             "preciso de mais informações",
             "como assistente",
             "sou apenas uma ia",
             "não tenho acesso",
-            "não posso ajudar com isso"
+            "não posso ajudar com isso",
+            "tenha em mente",
+            "estou respondendo como",
+            "como o órion"
         ]
 
         for b in bloqueadas:
             if b in resposta_final.lower():
                 resposta_final = resposta_final.replace(b, "")
+
+        # 🔥 limpa espaços duplicados
+        resposta_final = " ".join(resposta_final.split())
 
         if not resposta_final.strip():
             resposta_final = response
