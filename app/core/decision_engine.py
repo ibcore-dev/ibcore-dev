@@ -24,6 +24,7 @@ from app.core.dialogue_memory_engine import detect_main_topic, conversation_alre
 from database.database import SessionLocal
 from database.models import Profile, User
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import pytz
 
 # =================================================
@@ -277,7 +278,17 @@ class DecisionEngine:
         if not username:
             raise ValueError("Username não pode ser vazio")
 
-        user_input = user_input or ""
+        text = (user_input or "").lower()
+
+        # ⏰HORÁRIO
+        if "hora" in text:
+            now = datetime.now(ZoneInfo("America/Sao_Paulo"))
+            return f"Agora são {now.strftime('%H:%M')}."
+
+        # 📅 DATA
+        if "dia" in text or "data" in text:
+            now = datetime.now(ZoneInfo("America/Sao_Paulo"))
+            return f"Hoje é {now.strftime('%d de %B de %Y')}."
 
         # ===============================
         # SAFE INIT
