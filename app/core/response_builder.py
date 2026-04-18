@@ -819,6 +819,10 @@ def build_response(
 
     resposta_final = None
 
+    # =================================================
+    # CHAMADA LLM (PRIORIDADE TOTAL)
+    # =================================================
+
     if use_llm:
 
         print("🔥 LLM CHAMADO")
@@ -827,42 +831,38 @@ def build_response(
 
         print("🧠 LLM RESPONSE:", llm_response)
 
-        if llm_response and str(llm_response).strip() != "":
-            return llm_response.strip()
+        if llm_response and str(llm_response).strip():
+
+            resposta_final = llm_response.strip()
+
+            # 🔥 limpeza básica
+            resposta_final = re.sub(r"\(.*?\)", "", resposta_final).strip()
+
+            bloqueadas = [
+                "não vou responder mais",
+                "preciso de mais informações",
+                "como assistente",
+                "sou apenas uma ia",
+                "não tenho acesso",
+                "não posso ajudar com isso",
+                "tenha em mente",
+                "estou respondendo como",
+                "como o órion"
+            ]
+
+            for b in bloqueadas:
+                if b in resposta_final.lower():
+                    resposta_final = resposta_final.replace(b, "")
+
+            resposta_final = " ".join(resposta_final.split())
+
+            if resposta_final:
+                return resposta_final
+
     # =================================================
-    # FILTRO + RETORNO
+    # FALLBACK (ENGINE)
     # =================================================
 
-    if resposta_final:
-
-        # 🔥 remover coisas entre parênteses (ex: explicação interna)
-        resposta_final = re.sub(r"\(.*?\)", "", resposta_final).strip()
-
-        bloqueadas = [
-            "não vou responder mais",
-            "preciso de mais informações",
-            "como assistente",
-            "sou apenas uma ia",
-            "não tenho acesso",
-            "não posso ajudar com isso",
-            "tenha em mente",
-            "estou respondendo como",
-            "como o órion"
-        ]
-
-        for b in bloqueadas:
-            if b in resposta_final.lower():
-                resposta_final = resposta_final.replace(b, "")
-
-        # 🔥 limpa espaços duplicados
-        resposta_final = " ".join(resposta_final.split())
-
-        if not resposta_final.strip():
-            resposta_final = response
-
-        return resposta_final
-
-    # 🔥 GARANTIA FINAL (OBRIGATÓRIO)
     if not response or str(response).strip() == "":
         print("⚠️ FALLBACK FINAL DO BUILDER")
         return "Tô contigo. Me fala melhor o que você quer."
