@@ -283,7 +283,10 @@ class DecisionEngine:
             raise ValueError("Username não pode ser vazio")
 
         text = (user_input or "").lower()
+        emotion = detect_emotion(user_input)
 
+        if emotion == "sono":
+            return f"kkkk nada disso, {nome}. Tô ligado aqui. Por que, parece mesmo?"
         # ===============================
         # DETECÇÃO DE INTENT
         # ===============================

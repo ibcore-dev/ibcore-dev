@@ -11,15 +11,20 @@ def detect_intent(text: str):
     negativos = ["não", "nao", "nem", "negativo"]
     talvez = ["talvez", "quem sabe", "acho que sim", "acho que não", "acho que nao"]
 
-    if t in positivos:
-        return "positivo"
+    # POSITIVO
+    for p in positivos:
+        if p in t:
+            return "positivo"
 
-    if t in negativos:
-        return "negativo"
+    # NEGATIVO
+    for n in negativos:
+        if n in t:
+            return "negativo"
 
-    if t in talvez:
-        return "incerto"
-
+    # INCERTO
+    for i in talvez:
+        if i in t:
+            return "incerto"
     # ===============================
     # SAUDAÇÃO
     # ===============================
@@ -33,6 +38,21 @@ def detect_intent(text: str):
     for s in saudacoes:
         if s in t:
             return "saudacao"
+
+    return None
+    
+def detect_emotion(text: str):
+
+    t = text.lower()
+
+    if "sono" in t or "cansado" in t or "dormindo" in t:
+        return "sono"
+
+    if "triste" in t or "mal" in t:
+        return "triste"
+
+    if "feliz" in t or "bom" in t:
+        return "positivo"
 
     return None
 
