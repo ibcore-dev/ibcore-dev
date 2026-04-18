@@ -308,7 +308,7 @@ class DecisionEngine:
         if not username:
             raise ValueError("Username não pode ser vazio")
 
-        text = (user_input or "").lower()
+            text = (user_input or "").lower()
 
         # =================================
         # RESPOSTA DIRETA PARA TEMPO (LLM BASEADO)
