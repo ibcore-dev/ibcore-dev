@@ -5,21 +5,7 @@ def detect_intent(text: str):
     t = text.lower().strip()
 
     # ===============================
-    # SAUDAÇÃO
-    # ===============================
-    saudacoes = [
-        "oi", "olá", "ola", "oie",
-        "e aí", "e ai", "fala", "opa", "salve",
-        "bom dia", "boa tarde", "boa noite",
-        "tudo bem", "tudo certo", "como vai"
-    ]
-
-    for s in saudacoes:
-        if s in t:
-            return "saudacao"
-
-    # ===============================
-    # RESPOSTAS CURTAS (DECISÃO)
+    # RESPOSTAS CURTAS (PRIORIDADE MÁXIMA)
     # ===============================
     positivos = ["sim", "quero", "ok", "ja é", "já é", "pode ser", "bora"]
     negativos = ["não", "nao", "nem", "negativo"]
@@ -33,6 +19,20 @@ def detect_intent(text: str):
 
     if t in talvez:
         return "incerto"
+
+    # ===============================
+    # SAUDAÇÃO
+    # ===============================
+    saudacoes = [
+        "oi", "olá", "ola", "oie",
+        "e aí", "e ai", "fala", "opa", "salve",
+        "bom dia", "boa tarde", "boa noite",
+        "tudo bem", "tudo certo", "como vai"
+    ]
+
+    for s in saudacoes:
+        if s in t:
+            return "saudacao"
 
     return None
 
