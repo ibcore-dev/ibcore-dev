@@ -751,6 +751,12 @@ def build_response(
     ANÁLISE INTERNA (BASE DA RESPOSTA):
     {response}
 
+    INTENÇÃO DO USUÁRIO:
+    {intent}
+
+    ESTADO EMOCIONAL:
+    {emotional_score}
+
     ---
 
     Seu estilo:
@@ -772,7 +778,10 @@ def build_response(
     - Pode fazer perguntas se fizer sentido
     - Não exagere em perguntas
     - Seja imperfeito como uma pessoa real
-
+    - Se houver contexto anterior, continue de onde parou
+    - Não mude de assunto sem motivo
+    - Evite encerrar a conversa de forma seca
+    
     Importante:
     - Nunca explique seu comportamento
     - Nunca descreva como você está respondendo
@@ -796,7 +805,9 @@ def build_response(
     Contexto:
     Usuário: {username}
     Tema: {topic}
-
+    Histórico recente:
+    {history[-3:]}
+    
     Mensagem:
     {user_input}
 

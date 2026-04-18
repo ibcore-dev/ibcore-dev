@@ -28,4 +28,4 @@ Responda apenas com uma palavra.
     if response in ["pergunta", "decisao", "acao", "analise", "conversa"]:
         return response
 
-    return "conversa"
+    return "conversa" 
