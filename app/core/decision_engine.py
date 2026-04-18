@@ -275,64 +275,64 @@ class DecisionEngine:
 
     def process(self, username: str, user_input: str):
 
-    nome = memory.get_profile(username, "nome")
-    if not nome:
-        nome = username
+        nome = memory.get_profile(username, "nome")
+        if not nome:
+            nome = username
     
-    if not username:
-        raise ValueError("Username não pode ser vazio")
+        if not username:
+            raise ValueError("Username não pode ser vazio")
 
-    text = (user_input or "").lower()
+        text = (user_input or "").lower()
 
-    # ===============================
-    # DETECÇÃO DE INTENT
-    # ===============================
-    intent = "conversa"
-
-    if len(user_input.split()) < 3:
-        intent = detect_intent(user_input)
-    else:
-        intent = detect_intent_llm(user_input)
-
-    if not intent:
+        # ===============================
+        # DETECÇÃO DE INTENT
+        # ===============================
         intent = "conversa"
 
-    # =================================
-    # RESPOSTAS CURTAS
-    # =================================
-    if intent == "positivo":
-        return f"Boa, {nome}. Bora então."
+        if len(user_input.split()) < 3:
+            intent = detect_intent(user_input)
+        else:
+            intent = detect_intent_llm(user_input)
 
-    if intent == "negativo":
-        return f"Tranquilo, {nome}. Sem problema."
+        if not intent:
+            intent = "conversa"
 
-    if intent == "incerto":
-        return f"Sem pressão, {nome}. Pensa com calma."
+        # =================================
+        # RESPOSTAS CURTAS
+        # =================================
+        if intent == "positivo":
+            return f"Boa, {nome}. Bora então."
 
-    # =================================
-    # SAUDAÇÃO
-    # =================================
-    if intent == "saudacao":
-        import random
+        if intent == "negativo":
+            return f"Tranquilo, {nome}. Sem problema."
 
-        respostas = [
-            f"Fala {nome}, tudo certo?",
-            f"Opa {nome}, tranquilo?",
-            f"E aí {nome}, como você tá?",
-            f"Salve {nome}, manda aí",
-            f"Boa, {nome}. Chegou chegando hein"
-        ]
+        if intent == "incerto":
+            return f"Sem pressão, {nome}. Pensa com calma."
 
-        return random.choice(respostas)
+        # =================================
+        # SAUDAÇÃO
+        # =================================
+        if intent == "saudacao":
+            import random
 
-    # =================================
-    # RESPOSTA DIRETA PARA TEMPO
-    # =================================
-    if intent == "hora":
-        return f"Agora são {self.get_time_brasilia()}"
+            respostas = [
+                f"Fala {nome}, tudo certo?",
+                f"Opa {nome}, tranquilo?",
+                f"E aí {nome}, como você tá?",
+                f"Salve {nome}, manda aí",
+                f"Boa, {nome}. Chegou chegando hein"
+            ]
 
-    if intent == "data":
-        return f"Hoje é {self.get_date_brasilia()}"
+            return random.choice(respostas)
+
+        # =================================
+        # RESPOSTA DIRETA PARA TEMPO
+        # =================================
+        if intent == "hora":
+            return f"Agora são {self.get_time_brasilia()}"
+
+        if intent == "data":
+            return f"Hoje é {self.get_date_brasilia()}"
         # ===============================
         # SAFE INIT
         # ===============================
