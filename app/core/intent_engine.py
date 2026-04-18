@@ -1,48 +1,65 @@
 from app.core.llm_engine import generate_llm_response
 
+import re
+import unicodedata
+
+
+def normalizar(texto: str):
+    texto = texto.lower().strip()
+
+    # remove acentos
+    texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("utf-8")
+
+    # remove pontuação
+    texto = re.sub(r"[^\w\s]", "", texto)
+
+    return texto
+
+
 def detect_intent(text: str):
 
-    t = text.lower().strip()
+    t = normalizar(text)
 
-    # pergunta simples
-    if "?" in t:
-        return "pergunta"
+    palavras = t.split()
+    primeira = palavras[0] if palavras else ""
 
     # ===============================
-    # RESPOSTAS CURTAS (PRIORIDADE MÁXIMA)
-    # ===============================
-    positivos = ["sim", "quero", "ok", "ja é", "já é", "pode ser", "bora"]
-    negativos = ["não", "nao", "nem", "negativo"]
-    talvez = ["talvez", "quem sabe", "acho que sim", "acho que não", "acho que nao"]
-
-    # POSITIVO
-    for p in positivos:
-        if p in t:
-            return "positivo"
-
-    # NEGATIVO
-    for n in negativos:
-        if n in t:
-            return "negativo"
-
-    # INCERTO
-    for i in talvez:
-        if i in t:
-            return "incerto"
-    # ===============================
-    # SAUDAÇÃO
+    # SAUDAÇÃO (PRIORIDADE ALTA)
     # ===============================
     saudacoes = [
-        "oi", "olá", "ola", "oie",
-        "e aí", "e ai", "fala", "opa", "salve",
+        "oi", "ola", "oie",
+        "e ai", "fala", "opa", "salve",
         "bom dia", "boa tarde", "boa noite",
         "tudo bem", "tudo certo", "como vai"
     ]
 
-    for s in saudacoes:
-        if t.startswith(s):
-            return "saudacao"
+    if primeira in saudacoes or any(s in t for s in saudacoes):
+        return "saudacao"
 
+    # ===============================
+    # RESPOSTAS CURTAS (EXATAS)
+    # ===============================
+    positivos = ["sim", "quero", "ok", "ja e", "pode ser", "bora"]
+    negativos = ["nao", "nem", "negativo"]
+    talvez = ["talvez", "quem sabe", "acho que sim", "acho que nao"]
+
+    # 🔥 comparação por palavra EXATA
+    if t in positivos:
+        return "positivo"
+
+    if t in negativos:
+        return "negativo"
+
+    if t in talvez:
+        return "incerto"
+
+    # ===============================
+    # PERGUNTA
+    # ===============================
+    if "?" in text:
+        return "pergunta"
+
+    # fallback
     return None
 
 def detect_emotion(text: str):
