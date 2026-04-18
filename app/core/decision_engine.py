@@ -267,32 +267,6 @@ def detect_intent(text: str):
 
     return "conversa"
 
-def detect_time_intent(text: str):
-
-    text = text.lower()
-
-    padrões = [
-        "que horas são",
-        "me fala a hora",
-        "qual a hora",
-        "que dia é hoje",
-        "data de hoje",
-        "me fala a data"
-    ]
-
-    return any(p in text for p in padrões)
-
-def should_answer_time(context, topic, intent):
-
-    # NÃO responder se estiver em conversa ativa
-    if topic in ["projeto", "negocio", "emocional"]:
-        return False
-
-    if intent in ["decisao", "analise"]:
-        return False
-
-    return True
-
 # =================================================
 # ENGINE PRINCIPAL
 # =================================================
@@ -308,12 +282,12 @@ class DecisionEngine:
         if not username:
             raise ValueError("Username não pode ser vazio")
 
-            text = (user_input or "").lower()
+        text = (user_input or "").lower()
 
         # =================================
         # RESPOSTA DIRETA PARA TEMPO (LLM BASEADO)
         # =================================
-        if intent == "hora":
+        intent = "conversa"
             return f"Agora são {self.get_time_brasilia()}"
 
         if intent == "data":
@@ -372,7 +346,15 @@ class DecisionEngine:
             # fallback de segurança
             if not intent:
                 intent = detect_intent(user_input)
+        # =================================
+        # RESPOSTA DIRETA PARA TEMPO (CORRETO)
+        # =================================
+        if intent == "hora":
+            return f"Agora são {self.get_time_brasilia()}"
 
+        if intent == "data":
+            return f"Hoje é {self.get_date_brasilia()}"
+        
         if len(user_input.split()) <= 2 and intent == "conversa":
             intent = "resposta"
 
