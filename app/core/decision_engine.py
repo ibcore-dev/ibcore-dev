@@ -284,10 +284,23 @@ class DecisionEngine:
 
         text = (user_input or "").lower()
 
-        # =================================
-        # RESPOSTA DIRETA PARA TEMPO (LLM BASEADO)
-        # =================================
+        # ===============================
+        # DETECÇÃO DE INTENT
+        # ===============================
         intent = "conversa"
+
+        if len(user_input.split()) < 3:
+            intent = detect_intent(user_input)
+        else:
+            intent = detect_intent_llm(user_input)
+
+        if not intent:
+            intent = "conversa"
+
+        # =================================
+        # RESPOSTA DIRETA PARA TEMPO
+        # =================================
+        if intent == "hora":
             return f"Agora são {self.get_time_brasilia()}"
 
         if intent == "data":
