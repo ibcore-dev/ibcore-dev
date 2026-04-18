@@ -26,7 +26,8 @@ from database.models import Profile, User
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import pytz
-from app.core.intent_engine import detect_intent_llm
+from app.core.intent_engine import detect_intent, detect_intent_llm, detect_emotion
+from app.core.intent_engine import detect_emotion
 
 # =================================================
 # BIBLIOTECA EMOCIONAL — ORION
