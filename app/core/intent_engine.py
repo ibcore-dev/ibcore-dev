@@ -11,16 +11,20 @@ def detect_intent(text: str):
         "oi", "olá", "ola", "oie",
         "e aí", "e ai", "fala", "opa", "salve",
         "bom dia", "boa tarde", "boa noite",
-        "tudo bem", "tudo certo", "como vai",
-        "orion", "órion"
+        "tudo bem", "tudo certo", "como vai"
     ]
 
+    # 🔥 DETECÇÃO FLEXÍVEL
     for s in saudacoes:
-        if t == s or t.startswith(s):
+        if s in t:
             return "saudacao"
 
+    # 🔥 SE COMEÇAR COM NOME
+    if t.startswith("orion") or t.startswith("órion"):
+        return "saudacao"
+
     return None
-    
+
 def detect_intent_llm(text: str):
 
     prompt = f"""
