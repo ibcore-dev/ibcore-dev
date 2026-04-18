@@ -12,9 +12,9 @@ class GroqProvider(LLMProvider):
         else:
             try:
                 self.client = Groq(api_key=api_key)
-                print("✅ Groq conectado com sucesso")
+                print("✅ Groq Provider conectado")
             except Exception as e:
-                print("❌ Erro ao criar cliente Groq:", e)
+                print("❌ Erro ao iniciar Groq:", e)
                 self.client = None
 
     def generate(self, prompt):

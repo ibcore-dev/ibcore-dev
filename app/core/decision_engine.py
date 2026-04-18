@@ -26,6 +26,7 @@ from database.models import Profile, User
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import pytz
+from app.core.intent_engine import detect_intent_llm
 
 # =================================================
 # BIBLIOTECA EMOCIONAL — ORION
@@ -245,11 +246,15 @@ def detect_intent(text: str):
 
     text = (text or "").lower()
 
-    if any(word in text for word in [
-        "acho que", "estou pensando", "quero decidir",
-        "preciso decidir", "tenho que decidir", "devo decidir"
+    if any(frase in text for frase in [
+        "como faço",
+        "como eu faço",
+        "qual é",
+        "me explica",
+        "quero saber",
+        "me fala"
     ]):
-        return "decisao"
+        return "pergunta"
 
     if any(word in text for word in ["como", "qual", "quando", "onde", "por que"]):
         return "pergunta"
@@ -262,6 +267,31 @@ def detect_intent(text: str):
 
     return "conversa"
 
+def detect_time_intent(text: str):
+
+    text = text.lower()
+
+    padrões = [
+        "que horas são",
+        "me fala a hora",
+        "qual a hora",
+        "que dia é hoje",
+        "data de hoje",
+        "me fala a data"
+    ]
+
+    return any(p in text for p in padrões)
+
+def should_answer_time(context, topic, intent):
+
+    # NÃO responder se estiver em conversa ativa
+    if topic in ["projeto", "negocio", "emocional"]:
+        return False
+
+    if intent in ["decisao", "analise"]:
+        return False
+
+    return True
 
 # =================================================
 # ENGINE PRINCIPAL
@@ -280,15 +310,12 @@ class DecisionEngine:
 
         text = (user_input or "").lower()
 
-        # ⏰HORÁRIO
-        if "hora" in text:
-            now = datetime.now(ZoneInfo("America/Sao_Paulo"))
-            return f"Agora são {now.strftime('%H:%M')}."
-
-        # 📅 DATA
-        if "dia" in text or "data" in text:
-            now = datetime.now(ZoneInfo("America/Sao_Paulo"))
-            return f"Hoje é {now.strftime('%d de %B de %Y')}."
+    # =================================
+    # CONTROLE DE TEMPO (NOVO)
+    # =================================
+    if detect_time_intent(user_input):
+        if should_answer_time({}, detect_topic(user_input), detect_intent(user_input)):
+            return f"Agora são {self.get_time_brasilia()}"
 
         # ===============================
         # SAFE INIT
@@ -331,7 +358,18 @@ class DecisionEngine:
         # DETECÇÕES
         # ===============================
         topic = detect_topic(user_input)
-        intent = detect_intent(user_input)
+
+        # =================================
+        # DETECÇÃO DE INTENÇÃO (COM PROTEÇÃO)
+        # =================================
+        if len(user_input.split()) < 3:
+            intent = detect_intent(user_input)
+        else:
+            intent = detect_intent_llm(user_input)
+
+            # fallback de segurança
+            if not intent:
+                intent = detect_intent(user_input)
 
         if len(user_input.split()) <= 2 and intent == "conversa":
             intent = "resposta"
