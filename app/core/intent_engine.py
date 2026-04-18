@@ -2,9 +2,7 @@ from app.core.llm_engine import generate_llm_response
 
 def detect_intent(text: str):
 
-    def detect_intent(text: str):
-
-        t = text.lower().strip()
+    t = text.lower().strip()
 
     # pergunta simples
     if "?" in t:
