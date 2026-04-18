@@ -310,12 +310,12 @@ class DecisionEngine:
 
         text = (user_input or "").lower()
 
-    # =================================
-    # CONTROLE DE TEMPO (NOVO)
-    # =================================
-    if detect_time_intent(user_input):
-        if should_answer_time({}, detect_topic(user_input), detect_intent(user_input)):
-            return f"Agora são {self.get_time_brasilia()}"
+        # =================================
+        # CONTROLE DE TEMPO (NOVO)
+        # =================================
+        if detect_time_intent(user_input):
+            if should_answer_time({}, detect_topic(user_input), detect_intent(user_input)):
+                return f"Agora são {self.get_time_brasilia()}"
 
         # ===============================
         # SAFE INIT
