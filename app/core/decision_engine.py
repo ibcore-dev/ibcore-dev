@@ -311,11 +311,13 @@ class DecisionEngine:
         text = (user_input or "").lower()
 
         # =================================
-        # CONTROLE DE TEMPO (NOVO)
+        # RESPOSTA DIRETA PARA TEMPO (LLM BASEADO)
         # =================================
-        if detect_time_intent(user_input):
-            if should_answer_time({}, detect_topic(user_input), detect_intent(user_input)):
-                return f"Agora são {self.get_time_brasilia()}"
+        if intent == "hora":
+            return f"Agora são {self.get_time_brasilia()}"
+
+        if intent == "data":
+            return f"Hoje é {self.get_date_brasilia()}"
 
         # ===============================
         # SAFE INIT

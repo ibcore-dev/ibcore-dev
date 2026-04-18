@@ -3,19 +3,20 @@ from app.core.llm_engine import generate_llm_response
 
 def detect_intent_llm(text: str):
 
-    prompt = f"""
-Classifique a intenção da frase abaixo em UMA palavra:
+prompt = f"""
+Classifique a intenção da mensagem do usuário.
 
-Opções:
+Possíveis intenções:
+- hora (quando quer saber horas)
+- data (quando quer saber dia/data)
 - pergunta
-- decisao
-- acao
-- analise
 - conversa
+- ação
 
-Frase: "{text}"
+Mensagem:
+{text}
 
-Responda apenas com uma palavra.
+Responda APENAS com a intenção.
 """
 
     response = generate_llm_response(prompt)
