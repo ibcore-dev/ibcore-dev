@@ -297,6 +297,18 @@ class DecisionEngine:
         if not intent:
             intent = "conversa"
 
+        if intent == "saudacao":
+            import random
+
+            respostas = [
+                f"Fala {nome}, tudo certo?",
+                f"Opa {nome}, tranquilo?",
+                f"E aí {nome}, como você tá?",
+                f"Salve {nome}, manda aí",
+                f"Boa, {nome}. Chegou chegando hein"
+            ]
+
+            return random.choice(respostas)
         # =================================
         # RESPOSTA DIRETA PARA TEMPO
         # =================================
