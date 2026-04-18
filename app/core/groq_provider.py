@@ -7,12 +7,21 @@ class GroqProvider(LLMProvider):
     def __init__(self, api_key):
 
         if not api_key:
-            print("⚠️ GROQ_API_KEY NÃO DEFINIDA")
+            print("❌ GROQ_API_KEY NÃO DEFINIDA")
             self.client = None
         else:
-            self.client = Groq(api_key=api_key)
+            try:
+                self.client = Groq(api_key=api_key)
+                print("✅ Groq conectado com sucesso")
+            except Exception as e:
+                print("❌ Erro ao criar cliente Groq:", e)
+                self.client = None
 
     def generate(self, prompt):
+
+        if not self.client:
+            print("❌ LLM CLIENT NÃO INICIALIZADO")
+            return None
 
         try:
             chat = self.client.chat.completions.create(
@@ -32,5 +41,5 @@ class GroqProvider(LLMProvider):
             return chat.choices[0].message.content
 
         except Exception as e:
-            print("Erro Groq:", e)
+            print("❌ Erro Groq:", e)
             return None

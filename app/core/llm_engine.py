@@ -1,28 +1,38 @@
 print("🔥 LLM ENGINE INICIADO")
 
-from app.core.groq_provider import GroqProvider
 import os
 from dotenv import load_dotenv
+from app.core.groq_provider import GroqProvider
 
-load_dotenv()
+# 🔑 FORÇA CARREGAMENTO DO .env (funciona em qualquer estrutura)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+dotenv_path = os.path.join(BASE_DIR, ".env")
 
+load_dotenv(dotenv_path=dotenv_path)
+
+# 🔑 BUSCAR KEY
 API_KEY = os.getenv("GROQ_API_KEY")
 
-if not API_KEY:
-    print("❌ ERRO: GROQ_API_KEY não encontrada")
+print("🔍 DEBUG KEY:", API_KEY if API_KEY else "NÃO ENCONTRADA")
 
+# 🔧 CRIAR PROVIDER
 provider = GroqProvider(api_key=API_KEY)
+
 
 def generate_llm_response(prompt):
 
     try:
         if not API_KEY:
             print("⚠️ Sem API KEY - LLM desativado")
-            return None
+            return "Estou com dificuldade de acessar minha inteligência agora. Tenta de novo daqui a pouco."
 
         print("📡 Enviando para LLM...")
 
         response = provider.generate(prompt)
+
+        if not response:
+            print("⚠️ LLM não retornou resposta")
+            return "Deu uma falha aqui ao gerar resposta. Me manda de novo?"
 
         print("🧠 Resposta LLM:", response)
 
@@ -30,4 +40,4 @@ def generate_llm_response(prompt):
 
     except Exception as e:
         print("❌ Erro LLM Engine:", e)
-        return None
+        return "Ocorreu um erro ao processar sua mensagem."
