@@ -4,7 +4,7 @@ def detect_intent(text: str):
 
     def detect_intent(text: str):
 
-    t = text.lower().strip()
+        t = text.lower().strip()
 
     # pergunta simples
     if "?" in t:
