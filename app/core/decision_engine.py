@@ -293,9 +293,9 @@ class DecisionEngine:
         # ===============================
         intent = "conversa"
 
-        if len(user_input.split()) < 3:
-            intent = detect_intent(user_input)
-        else:
+        intent = detect_intent(user_input)
+
+        if not intent:
             intent = detect_intent_llm(user_input)
 
         if not intent:
@@ -308,7 +308,7 @@ class DecisionEngine:
 
         if intent == "pergunta":
             use_llm = True
-            
+
         # =================================
         # RESPOSTAS CURTAS
         # =================================
@@ -498,7 +498,19 @@ class DecisionEngine:
 
         relational_context = build_relational_context(username)
         behavior_pattern = detect_behavior_pattern(username)
-
+        
+        # =================================
+        # PRIORIDADE TOTAL DO LLM
+        # =================================
+        if use_llm:
+            return build_response(
+                username=username,
+                user_input=user_input,
+                response=None,
+                topic=topic,
+                intent=intent,
+                use_llm=True
+            )
         # ===============================
         # BUILD RESPONSE
         # ===============================

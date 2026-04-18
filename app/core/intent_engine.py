@@ -40,7 +40,7 @@ def detect_intent(text: str):
     ]
 
     for s in saudacoes:
-        if s in t:
+        if t.startswith(s):
             return "saudacao"
 
     return None
