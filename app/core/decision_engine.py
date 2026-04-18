@@ -302,6 +302,14 @@ class DecisionEngine:
             intent = "conversa"
 
         # =================================
+        # DEFINIR USO DO LLM
+        # =================================
+        use_llm = False
+
+        if intent == "pergunta":
+            use_llm = True
+            
+        # =================================
         # RESPOSTAS CURTAS
         # =================================
         if intent == "positivo":

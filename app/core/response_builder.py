@@ -436,8 +436,8 @@ def build_response(
     if cognitive_identity == "estrategico_firme":
         prefixo = "Vamos ser objetivos agora. "
 
-    elif cognitive_identity == "visionario_expansivo":
-        prefixo = "Isso pode escalar muito mais do que parece. "
+    elif cognitive_identity == "visionario_expansivo" and intent in ["projeto", "negocio", "estrategia"]:
+    prefixo = "Isso pode escalar muito mais do que parece. "
 
     elif cognitive_identity == "executor_pragmatico":
         prefixo = "Sem enrolação. Vamos para ação. "
