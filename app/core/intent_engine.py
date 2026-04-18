@@ -14,14 +14,25 @@ def detect_intent(text: str):
         "tudo bem", "tudo certo", "como vai"
     ]
 
-    # 🔥 DETECÇÃO FLEXÍVEL
     for s in saudacoes:
         if s in t:
             return "saudacao"
 
-    # 🔥 SE COMEÇAR COM NOME
-    if t.startswith("orion") or t.startswith("órion"):
-        return "saudacao"
+    # ===============================
+    # RESPOSTAS CURTAS (DECISÃO)
+    # ===============================
+    positivos = ["sim", "quero", "ok", "ja é", "já é", "pode ser", "bora"]
+    negativos = ["não", "nao", "nem", "negativo"]
+    talvez = ["talvez", "quem sabe", "acho que sim", "acho que não", "acho que nao"]
+
+    if t in positivos:
+        return "positivo"
+
+    if t in negativos:
+        return "negativo"
+
+    if t in talvez:
+        return "incerto"
 
     return None
 
