@@ -28,6 +28,7 @@ from zoneinfo import ZoneInfo
 import pytz
 from app.core.intent_engine import detect_intent, detect_intent_llm, detect_emotion
 from app.core.intent_engine import detect_emotion
+import random
 
 # =================================================
 # BIBLIOTECA EMOCIONAL — ORION
@@ -300,7 +301,41 @@ class DecisionEngine:
 
         if not intent:
             intent = "conversa"
+        # =================================
+        # RESPOSTAS DIRETAS (ANTES DE TUDO)
+        # =================================
+        if intent == "saudacao":
 
+            respostas = [
+                f"Fala {nome}, tudo certo?",
+                f"Opa {nome}, tranquilo?",
+                f"E aí {nome}, como você tá?",
+                f"Salve {nome}, manda aí",
+                f"Boa, {nome}. Chegou chegando hein"
+            ]
+
+            return random.choice(respostas)
+
+        if intent == "positivo":
+            return f"Boa, {nome}. Bora então."
+
+        if intent == "negativo":
+            return f"Tranquilo, {nome}. Sem problema."
+
+        if intent == "incerto":
+            return f"Sem pressão, {nome}. Pensa com calma."
+        
+        if intent == "despedida":
+
+            respostas = [
+                "Até mais, meu amigo 😎",
+                "Falou, qualquer coisa chama 👊",
+                "Tamo junto, até a próxima",
+                "Hasta la vista, baby 😏"
+            ]
+
+            return random.choice(respostas)
+        
         # =================================
         # DEFINIR USO DO LLM
         # =================================
@@ -308,7 +343,7 @@ class DecisionEngine:
 
         if intent == "pergunta":
             use_llm = True
-
+        
         # =================================
         # RESPOSTAS CURTAS
         # =================================

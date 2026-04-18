@@ -22,7 +22,18 @@ def detect_intent(text: str):
 
     palavras = t.split()
     primeira = palavras[0] if palavras else ""
+    
+    # ===============================
+    # DESPEDIDA
+    # ===============================
+    despedidas = [
+        "tchau", "falou", "ate mais", "até mais",
+        "ate", "até", "fui", "vou sair", "flw"
+    ]
 
+    if any(d in t for d in despedidas):
+        return "despedida"
+    
     # ===============================
     # SAUDAÇÃO (PRIORIDADE ALTA)
     # ===============================
