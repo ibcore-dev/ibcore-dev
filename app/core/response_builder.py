@@ -845,10 +845,17 @@ def build_response(
     # FINAL RESPONSE
     # =================================================
 
-    llm_response = generate_llm_response(prompt)
+    llm_response = ""
+
+    try:
+        llm_response = generate_llm_response(prompt)
+    except:
+        llm_response = base_response
+
+    if not llm_response:
+        llm_response = base_response
 
     final_response = f"{memory_hint} {llm_response}".strip()
-
     # =================================================
     # FALLBACK (ENGINE)
     # =================================================
