@@ -85,7 +85,14 @@ def get_user_profile(username: str):
 
 def detect_emotional_intensity(text: str):
 
-    text = (text or "").lower()
+    text = user_input.lower()
+
+    if any(p in text for p in [
+        "kkk", "kkkk", "kakaka",
+        "zoeira", "brincando",
+        "fbi", "policia aqui", "deu ruim"
+    ]):
+        return f"kkkk calma aí, {nome}. Tá zoando ou deu ruim mesmo?"
 
     for word in EMOTION_LIBRARY["forte"]:
         if word in text:
@@ -554,7 +561,6 @@ class DecisionEngine:
             from app.core.llm_engine import generate_llm_response
 
             if is_execution:
-
                 prompt = f"""
         Crie um post pronto para rede social.
 
@@ -567,33 +573,30 @@ class DecisionEngine:
         - Pode usar hashtags
         - Não explique, apenas entregue pronto
         """
+                llm_response = generate_llm_response(prompt)
 
-                return generate_llm_response(prompt)
+            else:
+                llm_response = generate_llm_response(user_input)
 
-            return generate_llm_response(user_input)
+            # 🔥 PASSA PELO ÓRION (ESSENCIAL)
+            response = build_response(
+                user_input=user_input,
+                username=username,
+                response=llm_response,
+                mode=mode,
+                topic=topic,
+                nome_real=nome_real,
+                emotional_score=emotional_value,
+                history=history,
+                priority=priority,
+                intent=intent,
+                cognitive_identity=cognitive_identity,
+                relational_context=relational_context,
+                behavior_pattern=behavior_pattern,
+                thought=thought
+            )
 
-        # ===============================
-        # BUILD RESPONSE
-        # ===============================
-        response = build_response(
-            user_input=user_input,
-            username=username,
-            mode=mode,
-            topic=topic,
-            nome_real=nome_real,
-            emotional_score=emotional_value,
-            history=history,
-            priority=priority,
-            intent=intent,
-            cognitive_identity=cognitive_identity,
-            relational_context=relational_context,
-            behavior_pattern=behavior_pattern,
-            thought=thought
-        )
-
-        if not response:
-            response = "Entendi. Pode me explicar melhor?"
-
+            return response
         # =================================
         # 🔒 SALVAR MEMÓRIA (CONTROLADO)
         # =================================

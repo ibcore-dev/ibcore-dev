@@ -850,7 +850,13 @@ def build_response(
 
             # 🔥 limpeza básica
             resposta_final = re.sub(r"\(.*?\)", "", resposta_final).strip()
-
+             # 🔥 remover linguagem robótica padrão
+            resposta_final = re.sub(
+                r"(aqui estão.*?:|é importante lembrar que.*?|se você estiver.*?:)",
+                "",
+                resposta_final,
+                flags=re.IGNORECASE
+            )
             bloqueadas = [
                 "não vou responder mais",
                 "preciso de mais informações",
@@ -860,7 +866,11 @@ def build_response(
                 "não posso ajudar com isso",
                 "tenha em mente",
                 "estou respondendo como",
-                "como o órion"
+                "como o órion",
+                "é importante lembrar",
+                "aqui estão algumas dicas",
+                "se você estiver",
+                "de maneira segura e legal"
             ]
 
             for b in bloqueadas:
@@ -869,8 +879,10 @@ def build_response(
 
             resposta_final = " ".join(resposta_final.split())
 
-            if resposta_final:
-                return resposta_final
+            # 🔥 FORÇAR TOM HUMANO (AQUI)
+            if len(resposta_final) > 20:
+                if not any(p in resposta_final.lower() for p in ["kkk", "boa", "fala", "cara", "rapaz"]):
+                    resposta_final = f"Boa, {username}. {resposta_final}"
 
     # =================================================
     # FALLBACK (ENGINE)
