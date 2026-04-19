@@ -557,25 +557,25 @@ class DecisionEngine:
             if is_execution:
     
 
-            # 🔥 PASSA PELO ÓRION (ESSENCIAL)
-            response = build_response(
-                user_input=user_input,
-                username=username,
-                response=llm_response,
-                mode=mode,
-                topic=topic,
-                nome_real=nome_real,
-                emotional_score=emotional_value,
-                history=history,
-                priority=priority,
-                intent=intent,
-                cognitive_identity=cognitive_identity,
-                relational_context=relational_context,
-                behavior_pattern=behavior_pattern,
-                thought=thought
-            )
+        # 🔥 PASSA PELO ÓRION (ESSENCIAL)
+        response = build_response(
+            user_input=user_input,
+            username=username,
+            response=llm_response,
+            mode=mode,
+            topic=topic,
+            nome_real=nome_real,
+            emotional_score=emotional_value,
+            history=history,
+            priority=priority,
+            intent=intent,
+            cognitive_identity=cognitive_identity,
+            relational_context=relational_context,
+            behavior_pattern=behavior_pattern,
+            thought=thought
+        )
 
-            return response
+        return response
         # =================================
         # 🔒 SALVAR MEMÓRIA (CONTROLADO)
         # =================================
