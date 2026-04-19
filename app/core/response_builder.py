@@ -706,7 +706,7 @@ def build_response(
     # =================================================
     use_llm = True
     llm_response = None
-    
+
     abertura = random.choice([
         "Boa,",
         "Entendi,",
@@ -723,6 +723,8 @@ def build_response(
 
     if len(user_input) > 25:
         use_llm = True
+
+
     # =================================================
     # PROMPT
     # =================================================
@@ -774,7 +776,7 @@ def build_response(
     - Se houver contexto anterior, continue de onde parou
     - Não mude de assunto sem motivo
     - Evite encerrar a conversa de forma seca
-    
+
     Importante:
     - Nunca explique seu comportamento
     - Nunca descreva como você está respondendo
@@ -794,18 +796,20 @@ def build_response(
     Regra crítica:
     - Sua resposta final deve conter APENAS a resposta ao usuário
     - Não inclua observações, explicações ou comentários entre parênteses
-    
+
     Contexto:
     Usuário: {username}
     Tema: {topic}
     Histórico recente:
     {history[-3:]}
-    
+
     Mensagem:
     {user_input}
 
     Responda como o Órion, usando a análise interna como base.
     """
+
+
     # =================================================
     # LIMPEZA FINAL
     # =================================================
@@ -841,6 +845,11 @@ def build_response(
             if not any(p in base_response.lower() for p in ["kkk", "boa", "fala", "cara", "rapaz"]):
                 base_response = f"Boa, {username}. {base_response}"
 
+
+    # =================================================
+    # RESPOSTA FINAL
+    # =================================================
+
     resposta_final = None
 
     if use_llm:
@@ -850,14 +859,18 @@ def build_response(
             llm_response = generate_llm_response(prompt)
             print("🧠 LLM RESPONSE:", llm_response)
 
-            if llm_response and str(llm_response).strip() != "":
-                resposta_final = llm_response.strip()
+            if llm_response:
+                texto = str(llm_response).strip()
+                if texto:
+                    resposta_final = texto
 
-        except:
+        except Exception as e:
+            print("❌ ERRO LLM:", str(e))
             resposta_final = None
 
-    # fallback
+
+    # fallback garantido
     if not resposta_final:
-        resposta_final = base_response
+        resposta_final = base_response or "Hmm, não consegui responder isso agora."
 
     return resposta_final
