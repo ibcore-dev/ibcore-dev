@@ -23,46 +23,12 @@ from app.core.memory_index_engine import search_memory
 from app.core.llm_engine import generate_llm_response
 
 
-def select_response_layers(
-    prefixo,
-    memory_hint,
-    contexto_texto,
-    analise_padrao,
-    tom_emocional,
-    continuidade_relacional,
-    resposta
-):
-
-    
-    layers = []
-
-    if prefixo:
-        layers.append(prefixo)
-
-    if tom_emocional:
-        layers.append(tom_emocional)
-
-    if memory_hint and len(layers) < 2:
-        layers.append(memory_hint)
-
-    if contexto_texto and len(layers) < 3:
-        layers.append(contexto_texto)
-
-    if continuidade_relacional and len(layers) < 3:
-        layers.append(continuidade_relacional)
-    if analise_padrao and len(layers) < 3:
-        layers.append(analise_padrao)
-
-    layers.append(resposta)
-
-    return " ".join(layers)
-def filter_layers(*layers, max_layers=3):
+def select_response_layers(*layers, max_layers=4):
 
     filtered = []
 
     for layer in layers:
-
-        if layer is None:
+        if not layer:
             continue
 
         text = str(layer).strip()
@@ -74,7 +40,6 @@ def filter_layers(*layers, max_layers=3):
             filtered.append(text)
 
     return " ".join(filtered[:max_layers])
-
 def build_response(
     user_input,
     username,
