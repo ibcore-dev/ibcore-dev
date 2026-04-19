@@ -335,21 +335,6 @@ class DecisionEngine:
         text = (user_input or "").lower()
         emotion = detect_emotion(user_input)
 
-        # DECIDIR USO DO LLM DEPOIS
-        use_llm = False
-
-        if state in ["criacao", "duvida", "planejamento"]:
-            use_llm = True
-
-        elif intent in ["pergunta", "analise"]:
-            use_llm = True
-
-        elif len(user_input.split()) > 3:
-            use_llm = True
-        
-        else:
-            use_llm = True
-
         # ===============================   
         # DETECÇÃO DE INTENT
         # ===============================
@@ -570,22 +555,7 @@ class DecisionEngine:
             from app.core.llm_engine import generate_llm_response
 
             if is_execution:
-                prompt = f"""
-        Crie um post pronto para rede social.
-
-        Tema: {user_input}
-
-        Regras:
-        - Texto envolvente
-        - Direto ao ponto
-        - Pode usar emojis
-        - Pode usar hashtags
-        - Não explique, apenas entregue pronto
-        """
-                llm_response = generate_llm_response(prompt)
-
-            else:
-                llm_response = generate_llm_response(user_input)
+    
 
             # 🔥 PASSA PELO ÓRION (ESSENCIAL)
             response = build_response(

@@ -90,8 +90,9 @@ def filter_layers(*layers, max_layers=3):
 def build_response(
     user_input,
     username,
-    mode,
-    topic,
+    response=None,  # 
+    mode=None,
+    topic=None,
     nome_real=None,
     emotional_score=0,
     history=None,
@@ -103,7 +104,8 @@ def build_response(
     thought=None
 ):
 
-    response = ""
+    base_response = response if response else ""
+    memory_hint = ""
     # =================================================
     # CONTINUIDADE DE CONVERSA
     # =================================================
@@ -168,17 +170,18 @@ def build_response(
     wife = recall_learned_fact(username, "wife_name")
 
     if wife and "esposa" in user_input.lower():
-        response = f"Você comentou que sua esposa se chama {wife}."
+        memory_hint += f" Você comentou que sua esposa se chama {wife}."
 
     bb = recall_learned_fact(username, "airsoft_bb")
 
     if bb and "bb" in user_input.lower():
-        response = f"Você mencionou que usa BB {bb} no airsoft."
+        memory_hint += f" Você mencionou que usa BB {bb} no airsoft."
 
     oil = recall_learned_fact(username, "car_oil")
 
     if oil and any(word in user_input.lower() for word in ["óleo", "oleo", "lubrificante"]):
-        response = f"Você comentou anteriormente que usa óleo {oil} no seu carro."
+        memory_hint += f" Você comentou anteriormente que usa óleo {oil} no seu carro."
+    
     # =================================================
     # DECISION LAYER
     # =================================================
@@ -216,8 +219,8 @@ def build_response(
         domain
     )
 
-    if knowledge:
-        response = knowledge
+    if not base_response:
+        base_response = knowledge
 
     # =================================================
     # TOPIC DOMINANCE ENGINE
@@ -243,8 +246,8 @@ def build_response(
 
     technical_analysis = analyze_technical_question(user_input)
 
-    if technical_analysis:
-        response = technical_analysis
+    if technical_analysis and not base_response:
+        base_response = technical_analysis
 
 
 
@@ -276,9 +279,8 @@ def build_response(
     try:
         conversation = process_conversation(user_input, history)
 
-        if conversation and conversation.get("handled"):
-            response = conversation.get("response")
-
+        if conversation and conversation.get("handled") and not base_response:
+            base_response = conversation.get("response")
     except Exception:
         pass
 
@@ -628,7 +630,7 @@ def build_response(
             f"{base_name}, isso parece estar pesando internamente."
         ]
 
-        response = filter_layers(
+        base_response = filter_layers(
             prefixo,
             episode_hint,
             memory_hint,
@@ -656,7 +658,7 @@ def build_response(
             f"{base_name}, vamos transformar isso em execução prática."
         ]
 
-        response = filter_layers(
+        base_response = filter_layers(
             prefixo,
             episode_hint,
             memory_hint,
@@ -678,7 +680,7 @@ def build_response(
     # =================================================
     elif mode == "diretivo":
 
-        response = filter_layers(
+        base_response = filter_layers(
             prefixo,
             episode_hint,
             memory_hint,
@@ -706,7 +708,7 @@ def build_response(
             f"Estou acompanhando, {base_name}."
         ]
 
-        response = filter_layers(
+        base_response = filter_layers(
             prefixo,
             episode_hint,
             memory_hint,
@@ -724,9 +726,6 @@ def build_response(
     # =================================================
     # DECISÃO DE USO DO LLM
     # =================================================
-
-    use_llm = False  
-
     abertura = random.choice([
         "Boa,",
         "Entendi,",
@@ -826,70 +825,53 @@ def build_response(
 
     Responda como o Órion, usando a análise interna como base.
     """
+    
     # =================================================
-    # CHAMADA LLM
-    # =================================================
-
-    resposta_final = None
-
-    # =================================================
-    # CHAMADA LLM (PRIORIDADE TOTAL)
+    # LIMPEZA FINAL
     # =================================================
 
-    if use_llm:
+    if base_response:
 
-        print("🔥 LLM CHAMADO")
+        base_response = re.sub(r"\(.*?\)", "", base_response).strip()
 
-        llm_response = generate_llm_response(prompt)
+        base_response = re.sub(
+            r"(aqui estão.*?:|é importante lembrar que.*?|se você estiver.*?:)",
+            "",
+            base_response,
+            flags=re.IGNORECASE
+        )
 
-        print("🧠 LLM RESPONSE:", llm_response)
+        bloqueadas = [
+            "como assistente",
+            "sou apenas uma ia",
+            "não tenho acesso",
+            "não posso ajudar com isso",
+            "tenha em mente",
+            "estou respondendo como"
+        ]
 
-        if llm_response and str(llm_response).strip():
+        for b in bloqueadas:
+            if b in base_response.lower():
+                base_response = base_response.replace(b, "")
 
-            resposta_final = llm_response.strip()
+        base_response = " ".join(base_response.split())
 
-            # 🔥 limpeza básica
-            resposta_final = re.sub(r"\(.*?\)", "", resposta_final).strip()
-             # 🔥 remover linguagem robótica padrão
-            resposta_final = re.sub(
-                r"(aqui estão.*?:|é importante lembrar que.*?|se você estiver.*?:)",
-                "",
-                resposta_final,
-                flags=re.IGNORECASE
-            )
-            bloqueadas = [
-                "não vou responder mais",
-                "preciso de mais informações",
-                "como assistente",
-                "sou apenas uma ia",
-                "não tenho acesso",
-                "não posso ajudar com isso",
-                "tenha em mente",
-                "estou respondendo como",
-                "como o órion",
-                "é importante lembrar",
-                "aqui estão algumas dicas",
-                "se você estiver",
-                "de maneira segura e legal"
-            ]
+        # 🔥 FORÇAR TOM HUMANO
+        if len(base_response) > 20:
+            if not any(p in base_response.lower() for p in ["kkk", "boa", "fala", "cara", "rapaz"]):
+                base_response = f"Boa, {username}. {base_response}"
 
-            for b in bloqueadas:
-                if b in resposta_final.lower():
-                    resposta_final = resposta_final.replace(b, "")
+    # =================================================
+    # FINAL RESPONSE
+    # =================================================
 
-            resposta_final = " ".join(resposta_final.split())
-
-            # 🔥 FORÇAR TOM HUMANO (AQUI)
-            if len(resposta_final) > 20:
-                if not any(p in resposta_final.lower() for p in ["kkk", "boa", "fala", "cara", "rapaz"]):
-                    resposta_final = f"Boa, {username}. {resposta_final}"
+    final_response = f"{memory_hint} {base_response}".strip()     
 
     # =================================================
     # FALLBACK (ENGINE)
     # =================================================
 
-    if not response or str(response).strip() == "":
-        print("⚠️ FALLBACK FINAL DO BUILDER")
-        return "Tô contigo. Me fala melhor o que você quer."
+    if final_response:
+        return final_response
 
-    return response
+    return "Tô contigo. Me fala melhor o que você quer."       
