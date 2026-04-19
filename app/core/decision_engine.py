@@ -556,21 +556,21 @@ class DecisionEngine:
             if is_execution:
 
                 prompt = f"""
-            Crie um post pronto para rede social.
+        Crie um post pronto para rede social.
 
-            Tema: {user_input}
+        Tema: {user_input}
 
-            Regras:
-            - Texto envolvente
-            - Direto ao ponto
-            - Pode usar emojis
-            - Pode usar hashtags
-            - Não explique, apenas entregue pronto
-            """
+        Regras:
+        - Texto envolvente
+        - Direto ao ponto
+        - Pode usar emojis
+        - Pode usar hashtags
+        - Não explique, apenas entregue pronto
+        """
 
-                    return generate_llm_response(prompt)
+                return generate_llm_response(prompt)
 
-                return generate_llm_response(user_input)
+            return generate_llm_response(user_input)
 
         # ===============================
         # BUILD RESPONSE
