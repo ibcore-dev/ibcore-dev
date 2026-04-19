@@ -285,6 +285,20 @@ class DecisionEngine:
             raise ValueError("Username não pode ser vazio")
 
         ctx = update_context(username, user_input)
+        # =================================
+        # DETECTAR MODO EXECUTOR
+        # =================================
+        is_execution = False
+
+        if ctx.get("state") == "criacao":
+            if any(p in user_input.lower() for p in [
+                "me ajuda com post",
+                "faz um post",
+                "cria um post",
+                "faz pra mim",
+                "gera um post"
+            ]):
+                is_execution = True
         state = ctx.get("state", "conversa")
         intent = ctx.get("intent", "conversa")
 
@@ -538,7 +552,25 @@ class DecisionEngine:
         # =================================
         if use_llm:
             from app.core.llm_engine import generate_llm_response
-            return generate_llm_response(user_input)
+
+            if is_execution:
+
+                prompt = f"""
+            Crie um post pronto para rede social.
+
+            Tema: {user_input}
+
+            Regras:
+            - Texto envolvente
+            - Direto ao ponto
+            - Pode usar emojis
+            - Pode usar hashtags
+            - Não explique, apenas entregue pronto
+            """
+
+                    return generate_llm_response(prompt)
+
+                return generate_llm_response(user_input)
 
         # ===============================
         # BUILD RESPONSE
