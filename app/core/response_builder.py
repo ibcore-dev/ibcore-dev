@@ -704,6 +704,9 @@ def build_response(
     # =================================================
     # DECISÃO DE USO DO LLM
     # =================================================
+    use_llm = True
+    llm_response = None
+    
     abertura = random.choice([
         "Boa,",
         "Entendi,",
@@ -841,31 +844,23 @@ def build_response(
             if not any(p in base_response.lower() for p in ["kkk", "boa", "fala", "cara", "rapaz"]):
                 base_response = f"Boa, {username}. {base_response}"
 
-    # =================================================
-    # FINAL RESPONSE
-    # =================================================
-
-    llm_response = None
+    resposta_final = None
 
     if use_llm:
+        print("🔥 LLM CHAMADO")
+
         try:
             llm_response = generate_llm_response(prompt)
+            print("🧠 LLM RESPONSE:", llm_response)
+
+            if llm_response and str(llm_response).strip() != "":
+                resposta_final = llm_response.strip()
+
         except:
-            llm_response = None
+            resposta_final = None
 
-    if not llm_response:
-        llm_response = base_response
+    # fallback
+    if not resposta_final:
+        resposta_final = base_response
 
-    # limpeza leve
-    if llm_response:
-        llm_response = re.sub(r"\(.*?\)", "", llm_response).strip()
-
-    final_response = llm_response.strip()
-    # =================================================
-    # FALLBACK (ENGINE)
-    # =================================================
-
-    if final_response:
-        return final_response
-
-    return "Tô contigo. Me fala melhor o que você quer."       
+    return resposta_final
