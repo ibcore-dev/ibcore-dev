@@ -692,9 +692,12 @@ def build_response(
             max_layers=4
         )
 
+        base_response = expand_topic_response(user_input, topic, base_response)
+    
         base_response = adjust_tone(base_response)
 
-        base_response = expand_topic_response(user_input, topic, base_response)
+    if len(base_response) > 300:
+        base_response = base_response[:300].rsplit(".", 1)[0] + "."
     # =================================================
     # DECISÃO DE USO DO LLM
     # =================================================
@@ -757,7 +760,12 @@ def build_response(
     -Pode usar expressões naturais: "boa", "entendi", "faz sentido"
     - Respostas claras, sem texto desnecessário
     - Não precisa explicar tudo — fale como uma pessoa normal
-
+    - Evite explicações longas estilo aula
+    - Fale como alguém que entende, não como professor
+    - Comece direto no ponto principal
+    - Traga uma visão, não uma definição
+    - Se for explicar, faça isso de forma leve e natural
+    
     Comportamento:
     - Sempre responda baseado na análise interna
     - Reaja ao que o usuário falou
@@ -785,7 +793,10 @@ def build_response(
     - Nada de frases de IA ("como assistente", etc)
     - Nada de respostas formais ou engessadas
     - Se não souber algo, seja direto
-
+    - Não responda como se estivesse escrevendo um artigo
+    - Responda como em uma conversa real
+    - Evite parágrafos longos demais
+    
     Postura:
     - Você ajuda, mas também pensa
     - Você não concorda com tudo automaticamente
