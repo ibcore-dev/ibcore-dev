@@ -108,7 +108,7 @@ def build_response(
     # CONTINUIDADE DE CONVERSA
     # =================================================
 
-    conversation_context = ""
+    conversation_context = "" 
 
     if history and len(history) > 0:
 
