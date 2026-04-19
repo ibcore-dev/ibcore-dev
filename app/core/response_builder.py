@@ -33,6 +33,19 @@ def select_response_layers(
     resposta
 ):
 
+    # =================================
+    # DECISÃO BASEADA EM CONTEXTO
+    # =================================
+
+    if state == "criacao":
+        return f"Boa, {nome}. Já montei algo pra você 👇\n\n{generate_llm_response(user_input)}"
+
+    if state == "resolucao":
+        return f"Beleza, {nome}. Me manda mais detalhe que a gente resolve isso."
+
+    if state == "execucao" and intent == "acao":
+        return f"Pode deixar, {nome}. Fazendo isso agora."
+    
     layers = []
 
     if prefixo:

@@ -277,13 +277,17 @@ class DecisionEngine:
 
     def process(self, username: str, user_input: str):
 
-        nome = memory.get_profile(username, "nome")
+        nome = memory.get_profile(username, "nome") 
         if not nome:
             nome = username
     
         if not username:
             raise ValueError("Username não pode ser vazio")
 
+        ctx = update_context(username, user_input)
+
+        state = ctx.get("state", "conversa")
+        intent = ctx.get("intent", "conversa")
         text = (user_input or "").lower()
         emotion = detect_emotion(user_input)
 
@@ -568,10 +572,14 @@ class DecisionEngine:
         if not response:
             response = "Entendi. Pode me explicar melhor?"
 
-        try:
-            memory.save_memory(username, user_input, response, topic)
-        except:
-            pass
+        # =================================
+        # 🔒 SALVAR MEMÓRIA (CONTROLADO)
+        # =================================
+        if ctx.get("allow_memory"):
+            try:
+                memory.save_memory(username, user_input, response, topic)
+            except:
+                pass
 
         return response
 
