@@ -285,9 +285,33 @@ class DecisionEngine:
             raise ValueError("Username não pode ser vazio")
 
         ctx = update_context(username, user_input)
-
         state = ctx.get("state", "conversa")
         intent = ctx.get("intent", "conversa")
+
+        # =========================
+        # MODO DO ÓRION (CÉREBRO)
+        # =========================
+        mode = "normal"
+
+        if state == "criacao":
+            mode = "criador"
+
+        elif state == "duvida":
+            mode = "explicador"
+
+        elif state == "planejamento":
+            mode = "estrategico"
+        state = ctx.get("state", "conversa")
+
+        use_llm = False
+
+        if state in ["criacao", "duvida", "planejamento"]:
+            use_llm = True
+
+        elif intent in ["pergunta", "analise"]:
+            use_llm = True
+        intent = ctx.get("intent", "conversa")
+        state = ctx.get("state", "conversa")
         text = (user_input or "").lower()
         emotion = detect_emotion(user_input)
 
@@ -296,12 +320,13 @@ class DecisionEngine:
         # ===============================
         # DETECÇÃO DE INTENT
         # ===============================
-        intent = "conversa"
-
-        intent = detect_intent(user_input)
+        intent = ctx.get("intent")
 
         if not intent:
-            intent = detect_intent_llm(user_input)
+            if len(user_input.split()) < 3:
+                intent = detect_intent(user_input)
+            else:
+                intent = detect_intent_llm(user_input)
 
         if not intent:
             intent = "conversa"
@@ -345,37 +370,15 @@ class DecisionEngine:
         # =================================
         use_llm = False
 
-        if intent == "pergunta":
+        if state == "criacao":
             use_llm = True
+
+        elif state == "duvida":
+            use_llm = True
+
+        use_llm = mode in ["criador", "explicador", "estrategico"]
         
-        # =================================
-        # RESPOSTAS CURTAS
-        # =================================
-        if intent == "positivo":
-            return f"Boa, {nome}. Bora então."
-
-        if intent == "negativo":
-            return f"Tranquilo, {nome}. Sem problema."
-
-        if intent == "incerto":
-            return f"Sem pressão, {nome}. Pensa com calma."
-
-        # =================================
-        # SAUDAÇÃO
-        # =================================
-        if intent == "saudacao":
-            import random
-
-            respostas = [
-                f"Fala {nome}, tudo certo?",
-                f"Opa {nome}, tranquilo?",
-                f"E aí {nome}, como você tá?",
-                f"Salve {nome}, manda aí",
-                f"Boa, {nome}. Chegou chegando hein"
-            ]
-
-            return random.choice(respostas)
-
+        
         # =================================
         # RESPOSTA DIRETA PARA TEMPO
         # =================================
@@ -400,7 +403,7 @@ class DecisionEngine:
 
         text = user_input.lower()
 
-        if "plano" in text or "como fazer" in text:
+        if ctx.get("state") == "planejamento":
             plan_check = planner_response(username)
             if plan_check:
                 return plan_check
@@ -413,13 +416,6 @@ class DecisionEngine:
         if "concluí" in text or "finalizei" in text:
             return advance_progress(username)
 
-        # ===============================
-        # CONTEXTO
-        # ===============================
-        try:
-            update_context(username, user_input)
-        except:
-            pass
 
         # ===============================
         # DETECÇÕES
@@ -429,10 +425,11 @@ class DecisionEngine:
         # =================================
         # DETECÇÃO DE INTENÇÃO (COM PROTEÇÃO)
         # =================================
-        if len(user_input.split()) < 3:
-            intent = detect_intent(user_input)
-        else:
-            intent = detect_intent_llm(user_input)
+        if not ctx.get("intent"):
+            if len(user_input.split()) < 3:
+                intent = detect_intent(user_input)
+            else:
+                intent = detect_intent_llm(user_input)
 
             # fallback de segurança
             if not intent:
@@ -542,14 +539,9 @@ class DecisionEngine:
         # PRIORIDADE TOTAL DO LLM
         # =================================
         if use_llm:
-            return build_response(
-                username=username,
-                user_input=user_input,
-                response=None,
-                topic=topic,
-                intent=intent,
-                use_llm=True
-            )
+            from app.core.llm_engine import generate_llm_response
+            return generate_llm_response(user_input)
+
         # ===============================
         # BUILD RESPONSE
         # ===============================
