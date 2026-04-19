@@ -33,18 +33,6 @@ def select_response_layers(
     resposta
 ):
 
-    # =================================
-    # DECISÃO BASEADA EM CONTEXTO
-    # =================================
-
-    if state == "criacao":
-        return f"Boa, {nome}. Já montei algo pra você 👇\n\n{generate_llm_response(user_input)}"
-
-    if state == "resolucao":
-        return f"Beleza, {nome}. Me manda mais detalhe que a gente resolve isso."
-
-    if state == "execucao" and intent == "acao":
-        return f"Pode deixar, {nome}. Fazendo isso agora."
     
     layers = []
 
@@ -147,25 +135,14 @@ def build_response(
     # =================================================
 
     learn_from_user(username, user_input)
-
-    # =================================================
-    # MEMORY INDEX ENGINE
-    # =================================================
-    memory_hint = ""
-    
-    oil = recall_learned_fact(username, "car_oil")
-
-    if oil and any(word in user_input.lower() for word in ["óleo", "oleo", "lubrificante"]):
-        memory_hint += f" O usuário utiliza óleo {oil} no carro."
     
     # =================================================
     # MEMORY RECALL
     # =================================================
-
     car = recall_learned_fact(username, "car_model")
 
     if car and "carro" in user_input.lower():
-        memory_hint = f"O usuário possui um carro modelo {car}."
+        memory_hint += f"O usuário possui um carro modelo {car}."
 
     wife = recall_learned_fact(username, "wife_name")
 
@@ -607,7 +584,7 @@ def build_response(
             f"{base_name}, vamos pensar em crescimento real."
         ]
 
-        response = select_response_layers(
+        base_response = select_response_layers(
             prefixo,
             memory_hint,
             contexto_texto,
@@ -617,7 +594,7 @@ def build_response(
             random.choice(respostas)
         )
 
-        response = adjust_tone(response)
+        base_response = adjust_tone(base_response)
 
     # =================================================
     # MODO REFLEXIVO
@@ -630,7 +607,7 @@ def build_response(
             f"{base_name}, isso parece estar pesando internamente."
         ]
 
-        base_response = filter_layers(
+        base_response = select_response_layers(
             prefixo,
             episode_hint,
             memory_hint,
@@ -645,7 +622,7 @@ def build_response(
             max_layers=4
         )
 
-        response = adjust_tone(response)
+        base_response = adjust_tone(base_response)
 
     # =================================================
     # MODO EXECUÇÃO
@@ -658,7 +635,7 @@ def build_response(
             f"{base_name}, vamos transformar isso em execução prática."
         ]
 
-        base_response = filter_layers(
+        base_response = select_response_layers(
             prefixo,
             episode_hint,
             memory_hint,
@@ -673,14 +650,14 @@ def build_response(
             max_layers=4
         )
 
-        response = adjust_tone(response)
+        base_response = adjust_tone(base_response)
 
     # =================================================
     # MODO DIRETIVO
     # =================================================
     elif mode == "diretivo":
 
-        base_response = filter_layers(
+        base_response = select_response_layers(
             prefixo,
             episode_hint,
             memory_hint,
@@ -695,7 +672,7 @@ def build_response(
             max_layers=4
         )
 
-        response = adjust_tone(response)
+        base_response = adjust_tone(base_response)
 
     # =================================================
     # MODO NORMAL (FALLBACK REAL)
@@ -708,7 +685,7 @@ def build_response(
             f"Estou acompanhando, {base_name}."
         ]
 
-        base_response = filter_layers(
+        base_response = select_response_layers(
             prefixo,
             episode_hint,
             memory_hint,
@@ -723,6 +700,7 @@ def build_response(
             max_layers=4
         )
 
+        base_response = adjust_tone(base_response)
     # =================================================
     # DECISÃO DE USO DO LLM
     # =================================================
@@ -761,7 +739,7 @@ def build_response(
     ---
 
     ANÁLISE INTERNA (BASE DA RESPOSTA):
-    {response}
+    {base_response}
 
     INTENÇÃO DO USUÁRIO:
     {intent}
@@ -769,6 +747,8 @@ def build_response(
     ESTADO EMOCIONAL:
     {emotional_score}
 
+    MEMÓRIA:
+    {memory_hint}
     ---
 
     Seu estilo:
@@ -865,7 +845,9 @@ def build_response(
     # FINAL RESPONSE
     # =================================================
 
-    final_response = f"{memory_hint} {base_response}".strip()     
+    llm_response = generate_llm_response(prompt)
+
+    final_response = f"{memory_hint} {llm_response}".strip()
 
     # =================================================
     # FALLBACK (ENGINE)

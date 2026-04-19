@@ -388,10 +388,10 @@ class DecisionEngine:
         # =================================
         use_llm = False
 
-        if state == "criacao":
+        if state in ["criacao", "duvida", "planejamento"]:
             use_llm = True
 
-        elif state == "duvida":
+        elif intent in ["pergunta", "analise"]:
             use_llm = True
         
         # =================================
@@ -406,7 +406,7 @@ class DecisionEngine:
         # SAFE INIT
         # ===============================
         history = []
-        response = ""
+        response=llm_response
         thought = ""
 
         # ===============================
@@ -551,13 +551,15 @@ class DecisionEngine:
         # =================================
         # PRIORIDADE TOTAL DO LLM
         # =================================
+        llm_response = None
+
         if use_llm:
             from app.core.llm_engine import generate_llm_response
+            llm_response = generate_llm_response(user_input)
 
-            if is_execution:
-    
-
-        # 🔥 PASSA PELO ÓRION (ESSENCIAL)
+        if not llm_response:
+            llm_response = user_input
+       
         response = build_response(
             user_input=user_input,
             username=username,
@@ -580,7 +582,7 @@ class DecisionEngine:
         # 🔒 SALVAR MEMÓRIA (CONTROLADO)
         # =================================
         if not response:
-            response = "Entendi. Pode me explicar melhor?"
+            response = "Tô contigo. Me fala melhor o que você quer."
 
         if ctx.get("allow_memory") and response and len(response) > 15:
             try:
