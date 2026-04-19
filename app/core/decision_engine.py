@@ -248,6 +248,20 @@ def detect_intent(text: str):
 
     text = (text or "").lower()
 
+    # 🔥 DETECÇÃO DE DESPEDIDA (PRIORIDADE ALTA)
+    if any(p in text for p in [
+        "tchau",
+        "até mais",
+        "falou",
+        "vou ali",
+        "fui",
+        "até logo",
+        "valeu",
+        "flw",
+        "bye"
+    ]):
+        return "despedida"
+    
     if any(frase in text for frase in [
         "como faço",
         "como eu faço",
@@ -287,6 +301,26 @@ class DecisionEngine:
         ctx = update_context(username, user_input)
         text = user_input.lower()
 
+        # 🔥 CORTE IMEDIATO DE DESPEDIDA (ANTES DE QUALQUER LÓGICA)
+        if any(p in text for p in [
+            "tchau",
+            "até mais",
+            "falou",
+            "vou ali",
+            "fui",
+            "até logo",
+            "valeu",
+            "flw",
+            "bye"
+        ]):
+            respostas = [
+                f"Falou, {nome}. Até mais 👊",
+                f"Beleza, {nome}. Até depois",
+                f"Tamo junto, {nome}",
+                f"Até mais, {nome}. Qualquer coisa chama"
+            ]
+            return random.choice(respostas)
+        
         if any(p in text for p in [
             "kkk", "kkkk", "kakaka",
             "zoeira", "brincando",
