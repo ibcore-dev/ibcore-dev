@@ -723,8 +723,6 @@ def build_response(
 
     if len(user_input) > 25:
         use_llm = True
-
-
     # =================================================
     # PROMPT
     # =================================================
@@ -808,7 +806,6 @@ def build_response(
 
     Responda como o Órion, usando a análise interna como base.
     """
-    
     # =================================================
     # LIMPEZA FINAL
     # =================================================
