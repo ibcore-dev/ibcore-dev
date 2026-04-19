@@ -85,14 +85,7 @@ def get_user_profile(username: str):
 
 def detect_emotional_intensity(text: str):
 
-    text = user_input.lower()
-
-    if any(p in text for p in [
-        "kkk", "kkkk", "kakaka",
-        "zoeira", "brincando",
-        "fbi", "policia aqui", "deu ruim"
-    ]):
-        return f"kkkk calma aí, {nome}. Tá zoando ou deu ruim mesmo?"
+    text = text.lower()
 
     for word in EMOTION_LIBRARY["forte"]:
         if word in text:
@@ -292,6 +285,14 @@ class DecisionEngine:
             raise ValueError("Username não pode ser vazio")
 
         ctx = update_context(username, user_input)
+        text = user_input.lower()
+
+        if any(p in text for p in [
+            "kkk", "kkkk", "kakaka",
+            "zoeira", "brincando",
+            "fbi", "policia aqui", "deu ruim"
+        ]):
+            return f"kkkk calma aí, {nome}. Tá zoando ou deu ruim mesmo?"
         # =================================
         # DETECTAR MODO EXECUTOR
         # =================================
@@ -600,7 +601,10 @@ class DecisionEngine:
         # =================================
         # 🔒 SALVAR MEMÓRIA (CONTROLADO)
         # =================================
-        if ctx.get("allow_memory"):
+        if not response:
+            response = "Entendi. Pode me explicar melhor?"
+
+        if ctx.get("allow_memory") and response and len(response) > 15:
             try:
                 memory.save_memory(username, user_input, response, topic)
             except:
