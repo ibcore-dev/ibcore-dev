@@ -40,6 +40,33 @@ def select_response_layers(*layers, max_layers=4):
             filtered.append(text)
 
     return " ".join(filtered[:max_layers])
+
+def expand_topic_response(user_input, topic, base_response):
+    
+    if not user_input:
+        return base_response
+
+    # só entra se resposta estiver fraca
+    if base_response and len(base_response) > 40:
+        return base_response
+
+    abertura = random.choice([
+        "Isso é interessante.",
+        "Esse tema é bem amplo.",
+        "Dá pra explorar isso por vários lados.",
+        "Tem bastante coisa dentro disso."
+    ])
+
+    desenvolvimento = f"{user_input.capitalize()} envolve vários aspectos diferentes dependendo do contexto."
+
+    direcao = random.choice([
+        "Pode ir desde algo mais técnico até algo mais conceitual.",
+        "Depende muito de como você quer olhar pra isso.",
+        "Tem desde o básico até níveis mais avançados.",
+        "Dá pra analisar tanto na prática quanto na teoria."
+    ])
+
+    return f"{abertura} {desenvolvimento} {direcao}"    
 def build_response(
     user_input,
     username,
@@ -666,6 +693,8 @@ def build_response(
         )
 
         base_response = adjust_tone(base_response)
+
+        base_response = expand_topic_response(user_input, topic, base_response)
     # =================================================
     # DECISÃO DE USO DO LLM
     # =================================================
@@ -688,8 +717,6 @@ def build_response(
 
     if len(user_input) > 25:
         use_llm = True
-
-
     # =================================================
     # PROMPT
     # =================================================
@@ -741,7 +768,13 @@ def build_response(
     - Se houver contexto anterior, continue de onde parou
     - Não mude de assunto sem motivo
     - Evite encerrar a conversa de forma seca
-
+    - Evite começar a resposta com perguntas
+    - Primeiro entregue uma ideia, explicação ou opinião
+    - Só faça pergunta se realmente agregar à conversa
+    - Evite começar a resposta com perguntas
+    - Primeiro entregue uma ideia, explicação ou opinião
+    - Só faça pergunta se realmente agregar à conversa
+    
     Importante:
     - Nunca explique seu comportamento
     - Nunca descreva como você está respondendo
