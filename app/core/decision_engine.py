@@ -406,7 +406,8 @@ class DecisionEngine:
         # SAFE INIT
         # ===============================
         history = []
-        response=llm_response
+        llm_response = None  # 🔥 GARANTE EXISTÊNCIA
+        response = None
         thought = ""
 
         # ===============================
@@ -548,22 +549,10 @@ class DecisionEngine:
         relational_context = build_relational_context(username)
         behavior_pattern = detect_behavior_pattern(username)
         
-        # =================================
-        # PRIORIDADE TOTAL DO LLM
-        # =================================
-        llm_response = None
-
-        if use_llm:
-            from app.core.llm_engine import generate_llm_response
-            llm_response = generate_llm_response(user_input)
-
-        if not llm_response:
-            llm_response = user_input
-       
         response = build_response(
             user_input=user_input,
             username=username,
-            response=llm_response,
+            response=None,
             mode=mode,
             topic=topic,
             nome_real=nome_real,
