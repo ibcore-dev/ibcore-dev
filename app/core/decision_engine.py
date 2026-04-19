@@ -283,6 +283,27 @@ def detect_intent(text: str):
 
     return "conversa"
 
+def resolve_self_reference(user_input):
+
+    text = user_input.lower()
+
+    referencias_orion = [
+        "você",
+        "vc",
+        "tu",
+        "seu",
+        "sua",
+        "teu",
+        "orion",
+        "órion"
+    ]
+
+    for ref in referencias_orion:
+        if ref in text:
+            return True
+
+    return False
+
 # =================================================
 # ENGINE PRINCIPAL
 # =================================================
@@ -300,6 +321,8 @@ class DecisionEngine:
 
         ctx = update_context(username, user_input)
         text = user_input.lower()
+
+        is_about_orion = resolve_self_reference(user_input)
 
         # 🔥 CORTE IMEDIATO DE DESPEDIDA (ANTES DE QUALQUER LÓGICA)
         if any(p in text for p in [
@@ -597,7 +620,8 @@ class DecisionEngine:
             cognitive_identity=cognitive_identity,
             relational_context=relational_context,
             behavior_pattern=behavior_pattern,
-            thought=thought
+            thought=thought,
+            self_reference=is_about_orion,
         )
 
         return response

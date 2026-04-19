@@ -81,7 +81,8 @@ def build_response(
     cognitive_identity="mentor_equilibrado",
     relational_context=None,
     behavior_pattern=None,
-    thought=None
+    thought=None,
+    self_reference=False
 ):
 
     base_response = response if response else ""
@@ -695,6 +696,10 @@ def build_response(
         base_response = expand_topic_response(user_input, topic, base_response)
     
         base_response = adjust_tone(base_response)
+
+        if self_reference:
+            if not base_response or len(base_response) < 20:
+                base_response = "Boa pergunta. Eu diria que..."
 
     if len(base_response) > 300:
         base_response = base_response[:300].rsplit(".", 1)[0] + "."
