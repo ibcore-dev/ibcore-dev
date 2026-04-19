@@ -325,6 +325,17 @@ class DecisionEngine:
             mode = "estrategico"
         state = ctx.get("state", "conversa")
 
+        # CONTEXTO
+        ctx = update_context(username, user_input)
+
+        # PEGAR ESTADO E INTENT PRIMEIRO
+        intent = ctx.get("intent", "conversa")
+        state = ctx.get("state", "conversa")
+
+        text = (user_input or "").lower()
+        emotion = detect_emotion(user_input)
+
+        # DECIDIR USO DO LLM DEPOIS
         use_llm = False
 
         if state in ["criacao", "duvida", "planejamento"]:
@@ -332,14 +343,9 @@ class DecisionEngine:
 
         elif intent in ["pergunta", "analise"]:
             use_llm = True
-        intent = ctx.get("intent", "conversa")
-        state = ctx.get("state", "conversa")
-        text = (user_input or "").lower()
-        emotion = detect_emotion(user_input)
 
-        if emotion == "sono":
-            return f"kkkk nada disso, {nome}. Tô ligado aqui. Por que, parece mesmo?"
-        # ===============================
+        elif len(user_input.split()) > 3:
+            use_llm = True
         # DETECÇÃO DE INTENT
         # ===============================
         intent = ctx.get("intent")
@@ -397,9 +403,6 @@ class DecisionEngine:
 
         elif state == "duvida":
             use_llm = True
-
-        use_llm = mode in ["criador", "explicador", "estrategico"]
-        
         
         # =================================
         # RESPOSTA DIRETA PARA TEMPO
