@@ -395,28 +395,26 @@ class DecisionEngine:
         thought = ""
 
         # ===============================
-        # GOAL / PLANNER
+        # GOAL / PLANNER (CONTROLADO POR CONTEXTO)
         # ===============================
-        goal_check = goal_response(username, user_input)
-        if goal_check:
-            return goal_check
 
-        text = user_input.lower()
+        if ctx.get("state") in ["planejamento", "objetivo"] and len(user_input.split()) > 4:
+            goal_check = goal_response(username, user_input)
+            if goal_check:
+                return goal_check
 
-        if ctx.get("state") == "planejamento":
+        if ctx.get("state") == "planejamento" and intent in ["planejar", "estrategia"]:
             plan_check = planner_response(username)
             if plan_check:
                 return plan_check
 
-        if "próximo passo" in text or "proximo passo" in text:
+        if ctx.get("intent") == "progresso":
             progress = get_progress(username)
             if progress:
                 return progress
 
-        if "concluí" in text or "finalizei" in text:
+        if ctx.get("intent") == "conclusao":
             return advance_progress(username)
-
-
         # ===============================
         # DETECÇÕES
         # ===============================
