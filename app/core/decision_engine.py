@@ -346,6 +346,11 @@ class DecisionEngine:
 
         elif len(user_input.split()) > 3:
             use_llm = True
+        
+        else:
+            use_llm = True
+
+        # ===============================   
         # DETECÇÃO DE INTENT
         # ===============================
         intent = ctx.get("intent")
