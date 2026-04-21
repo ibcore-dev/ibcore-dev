@@ -336,7 +336,6 @@ class DecisionEngine:
         if len(palavras) <= 3 and any(p in texto_limpo for p in [
             "tchau",
             "até mais",
-            "falou",
             "vou ali",
             "fui",
             "até logo",
