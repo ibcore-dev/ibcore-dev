@@ -247,37 +247,37 @@ def detect_topic(text: str):
 def detect_intent(text: str):
 
     text = (text or "").lower()
+    texto_limpo = text.strip()
+    palavras = texto_limpo.split()
 
-    # 🔥 DETECÇÃO DE DESPEDIDA (PRIORIDADE ALTA)
-    if any(p in text for p in [
-        "tchau",
-        "até mais",
-        "falou",
-        "vou ali",
-        "fui",
-        "até logo",
-        "valeu",
-        "flw",
-        "bye"
-    ]):
+    despedidas = [
+        "tchau", "até mais", "falou", "vou ali",
+        "fui", "até logo", "valeu", "flw", "bye"
+    ]
+
+    # 🔥 bloqueio de falso positivo (ex: "ela falou comigo")
+    if any(p in texto_limpo for p in ["falou", "fui", "vou"]) and len(palavras) > 3:
+        pass  # NÃO retorna despedida, continua fluxo
+
+    # ✅ despedida real
+    elif len(palavras) <= 3 and any(p in texto_limpo for p in despedidas):
         return "despedida"
-    
+
+    # 🔹 pergunta
     if any(frase in text for frase in [
-        "como faço",
-        "como eu faço",
-        "qual é",
-        "me explica",
-        "quero saber",
-        "me fala"
+        "como faço", "como eu faço", "qual é",
+        "me explica", "quero saber", "me fala"
     ]):
         return "pergunta"
 
     if any(word in text for word in ["como", "qual", "quando", "onde", "por que"]):
         return "pergunta"
 
+    # 🔹 ação
     if any(word in text for word in ["preciso fazer", "vou fazer", "executar"]):
         return "acao"
 
+    # 🔹 análise
     if any(word in text for word in ["analisar", "avaliar", "risco"]):
         return "analise"
 
@@ -312,75 +312,59 @@ class DecisionEngine:
 
     def process(self, username: str, user_input: str):
 
-        nome = memory.get_profile(username, "nome") 
-        if not nome:
-            nome = username
-    
-        if not username:
-            raise ValueError("Username não pode ser vazio")
+    nome = memory.get_profile(username, "nome") 
+    if not nome:
+        nome = username
 
-        ctx = update_context(username, user_input)
-        text = user_input.lower()
+    if not username:
+        raise ValueError("Username não pode ser vazio")
 
-        is_about_orion = resolve_self_reference(user_input)
+    ctx = update_context(username, user_input)
+    text = user_input.lower()
 
-        
-        texto_limpo = text.strip().lower()
-        palavras = texto_limpo.split()
+    texto_limpo = text.strip()
+    palavras = texto_limpo.split()
 
-        # ❌ bloqueio de falso positivo
-        if any(p in texto_limpo for p in ["falou", "fui", "vou"]) and len(palavras) > 3:
-            return None
+    # 🔥 detectar intenção
+    intent = detect_intent(user_input)
 
-        # ✅ despedida real (curta e clara)
-        if len(palavras) <= 3 and any(p in texto_limpo for p in [
-            "tchau",
-            "até mais",
-            "vou ali",
-            "fui",
-            "até logo",
-            "valeu",
-            "flw",
-            "bye"
-        ]):
-            respostas = [
-                f"Falou, {nome}. Até mais 👊",
-                f"Beleza, {nome}. Até depois",
-                f"Tamo junto, {nome}",
-                f"Até mais, {nome}. Qualquer coisa chama"
-            ]
-            return random.choice(respostas)
-        
-        texto_limpo = text.strip().lower()
-        palavras = texto_limpo.split()
+    # 🔹 despedida
+    if intent == "despedida":
+        respostas = [
+            f"Falou, {nome}. Até mais 👊",
+            f"Beleza, {nome}. Até depois",
+            f"Tamo junto, {nome}",
+            f"Até mais, {nome}. Qualquer coisa chama"
+        ]
+        return random.choice(respostas)
 
-        # 🔥 risada (kkkk etc)
-        if any(p in texto_limpo for p in ["kkk", "kkkk", "kakaka"]):
-            respostas = [
-                f"kkk boa, {nome}. Manda aí",
-                f"kkkk tô contigo, {nome}. O que foi?",
-                f"kkk aí sim 😄 fala comigo"
-            ]
-            return random.choice(respostas)
+    # 🔹 risada
+    if any(p in texto_limpo for p in ["kkk", "kkkk", "kakaka"]):
+        respostas = [
+            f"kkk boa, {nome}. Manda aí",
+            f"kkkk tô contigo, {nome}. O que foi?",
+            f"kkk aí sim 😄 fala comigo"
+        ]
+        return random.choice(respostas)
 
-        # 🔥 zoeira leve
-        if len(palavras) <= 6 and any(p in texto_limpo for p in ["zoeira", "brincando"]):
-            respostas = [
-                f"kkk beleza, {nome}. Mas manda o que você quer de verdade",
-                f"tá zoando né 😄 fala sério agora",
-                f"boa kkk, mas e aí, qual é a real?"
-            ]
-            return random.choice(respostas)
+    # 🔹 zoeira
+    if len(palavras) <= 6 and any(p in texto_limpo for p in ["zoeira", "brincando"]):
+        respostas = [
+            f"kkk beleza, {nome}. Mas manda o que você quer de verdade",
+            f"tá zoando né 😄 fala sério agora",
+            f"boa kkk, mas e aí, qual é a real?"
+        ]
+        return random.choice(respostas)
 
-        # 🔥 possível problema (deu ruim)
-        if any(p in texto_limpo for p in ["deu ruim", "fbi", "policia aqui"]):
-            respostas = [
-                f"calma aí, {nome}. O que aconteceu?",
-                f"opa, {nome}… deu ruim como?",
-                f"fala comigo, {nome}. Qual foi o problema?"
-            ]
-            return random.choice(respostas)
-        
+    # 🔹 problema
+    if any(p in texto_limpo for p in ["deu ruim", "fbi", "policia aqui"]):
+        respostas = [
+            f"calma aí, {nome}. O que aconteceu?",
+            f"opa, {nome}… deu ruim como?",
+            f"fala comigo, {nome}. Qual foi o problema?"
+        ]
+        return random.choice(respostas)
+
         # =================================
         # DETECTAR MODO EXECUTOR
         # =================================
