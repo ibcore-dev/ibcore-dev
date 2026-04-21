@@ -646,8 +646,12 @@ def suggestions(current_user: DBUser = Depends(get_current_user), db: Session = 
 @router.get("/admin/errors")
 def listar_erros(current_user: DBUser = Depends(get_current_user)):
 
-    conn = sqlite3.connect("orion.db")
-    cursor = conn.cursor()
+    try:
+        conn = sqlite3.connect("orion.db")
+        cursor = conn.cursor()
+        ...
+    except Exception as e:
+        return {"erros": [{"mensagem": str(e), "rota": "admin/errors", "data": "agora"}]}
 
     cursor.execute("""
     SELECT message, route, timestamp
@@ -665,7 +669,7 @@ def listar_erros(current_user: DBUser = Depends(get_current_user)):
         erros.append({
             "mensagem": row[0],
             "rota": row[1],
-            "data": row[2]
+            "data": row[2],
             "tipo": "erro"
         })
 
