@@ -73,54 +73,19 @@ async function carregarUsuarios() {
     }
 }
 
-async function carregarMensagens() {
 
-    try {
-        const res = await fetch(API + "/admin/mensagens", {
-            headers: {
-                "Authorization": "Bearer " + token
-            }
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            console.error(data);
-            return;
-        }
-
-        const lista = document.getElementById("lista-mensagens");
-        lista.innerHTML = "";
-
-        data.mensagens.forEach(msg => {
-            const div = document.createElement("div");
-            div.className = "mensagem-item";
-
-            div.innerHTML = `
-                <strong>Usuário:</strong> ${msg.pergunta}<br>
-                <strong>Órion:</strong> ${msg.resposta}<br>
-                <small>${msg.data}</small>
-            `;
-
-            lista.appendChild(div);
-        });
-
-    } catch (e) {
-        console.error("Erro mensagens:", e);
-    }
-}
 // =========================
 // 📈 GRÁFICO
 // =========================
-let grafico;
+let chartInstance = null;
 
 function atualizarGrafico(dados) {
 
-    if (grafico) {
-        grafico.destroy();
+    if (chartInstance) {
+        chartInstance.destroy();
     }
 
-    grafico = new Chart(document.getElementById("grafico"), {
+    chartInstance = new Chart(document.getElementById("grafico"), {
         type: 'line',
         data: {
             labels: ["Seg", "Ter", "Qua", "Qui", "Sex"],
@@ -136,7 +101,7 @@ function atualizarGrafico(dados) {
 async function carregarErros() {
 
     try {
-        const res = await fetch(API + "/admin/erros", {
+        const res = await fetch(API + "/admin/errors", {
             headers: {
                 "Authorization": "Bearer " + token
             }
@@ -173,13 +138,11 @@ async function carregarErros() {
 // =========================
 carregarDashboard();
 carregarUsuarios();
-carregarMensagens();  // 🔥 faltava
 carregarErros();      // 🔥 faltava
 
 // 🔄 Atualiza a cada 5 segundos
 setInterval(() => {
     carregarDashboard();
     carregarUsuarios();
-    carregarMensagens();
     carregarErros(); // 
 }, 5000);

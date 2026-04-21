@@ -19,7 +19,7 @@ import shutil
 from uuid import uuid4
 
 
-def log_error(message, route):
+def log_error(message, route, tipo="error"):
     conn = sqlite3.connect("orion.db")
     cursor = conn.cursor()
 
@@ -28,14 +28,15 @@ def log_error(message, route):
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         message TEXT,
         route TEXT,
+        type TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
     """)
 
     cursor.execute("""
-    INSERT INTO error_logs (message, route)
-    VALUES (?, ?)
-    """, (message, route))
+    INSERT INTO error_logs (message, route, type)
+    VALUES (?, ?, ?)
+    """, (message, route, tipo))
 
     conn.commit()
     conn.close()
@@ -110,7 +111,9 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
 
     token = create_token({"sub": str(db_user.id)})
-
+    
+    log_error(f"Usuário {db_user.username} logou", "/login", "info")
+    
     return {"access_token": token}
 # =========================
 # COMMAND
@@ -128,14 +131,17 @@ def command(data: CommandInput, current_user: DBUser = Depends(get_current_user)
 
         # 🔥 GARANTIA TOTAL DE RESPOSTA (ANTI-NULL)
         if response is None:
+            log_error("Engine retornou None", "/command", "warning")
             print("🚨 ENGINE RETORNOU NONE")
             response = "Tô contigo. Me fala melhor o que você quer."
 
         elif isinstance(response, str) and response.strip() == "":
+            log_error("Engine retornou string vazia", "/command", "warning")
             print("🚨 ENGINE RETORNOU STRING VAZIA")
             response = "Tô contigo. Me fala melhor o que você quer."
 
         elif not isinstance(response, str):
+            log_error(f"Resposta tipo inválido: {type(response)}", "/command", "warning")
             print("🚨 ENGINE RETORNOU TIPO INVÁLIDO:", type(response))
             response = str(response)
 
@@ -143,8 +149,7 @@ def command(data: CommandInput, current_user: DBUser = Depends(get_current_user)
 
     except Exception as e:
         print("🔥 ERRO COMMAND:", e)
-        log_error(str(e), "/command")
-
+        log_error(str(e), "/command", "error")
         # 🔥 NUNCA QUEBRA FRONT
         return {
             "response": "Deu um erro aqui, mas continuo contigo. Me manda de novo."
@@ -227,7 +232,7 @@ def save_profile(
 
     except Exception as e:
         print("🔥 ERRO SAVE:", e)
-        log_error(str(e), "/profile/save")
+        log_error(str(e), "/profile/save", "error")
         raise HTTPException(status_code=500, detail=str(e))
         
 
@@ -643,25 +648,21 @@ def suggestions(current_user: DBUser = Depends(get_current_user), db: Session = 
         for u in users
     ]
 
-@router.get("/admin/erros")
+@router.get("/admin/errors")
 def listar_erros(current_user: DBUser = Depends(get_current_user)):
 
-    try:
-        conn = sqlite3.connect("orion.db")
-        cursor = conn.cursor()
-        ...
-    except Exception as e:
-        return {"erros": [{"mensagem": str(e), "rota": "admin/errors", "data": "agora"}]}
+    conn = sqlite3.connect("orion.db")
+    cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT message, route, timestamp
+    SELECT message, route, timestamp, type
     FROM error_logs
+    WHERE type = 'error'
     ORDER BY id DESC
     LIMIT 10
     """)
 
     rows = cursor.fetchall()
-
     conn.close()
 
     erros = []
@@ -670,7 +671,32 @@ def listar_erros(current_user: DBUser = Depends(get_current_user)):
             "mensagem": row[0],
             "rota": row[1],
             "data": row[2],
-            "tipo": "erro"
+            "tipo": row[3]
         })
 
     return {"erros": erros}
+@router.get("/admin/mensagens")
+def listar_mensagens(current_user: DBUser = Depends(get_current_user)):
+
+    conn = sqlite3.connect("orion.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT user_input, response, timestamp
+    FROM memory
+    ORDER BY id DESC
+    LIMIT 10
+    """)
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    mensagens = []
+    for row in rows:
+        mensagens.append({
+            "pergunta": row[0],
+            "resposta": row[1],
+            "data": row[2]
+        })
+
+    return {"mensagens": mensagens}   
