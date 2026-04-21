@@ -873,7 +873,11 @@ def build_response(
         print("🔥 LLM CHAMADO")
 
         try:
-            llm_response = generate_llm_response(prompt)
+            llm_response = generate_llm_response(
+                user_input=user_input,
+                history=history,
+                system_prompt=prompt
+            )
             print("🧠 LLM RESPONSE:", llm_response)
 
             if llm_response:
