@@ -351,12 +351,36 @@ class DecisionEngine:
             ]
             return random.choice(respostas)
         
-        if any(p in text for p in [
-            "kkk", "kkkk", "kakaka",
-            "zoeira", "brincando",
-            "fbi", "policia aqui", "deu ruim"
-        ]):
-            return f"kkkk calma aí, {nome}. Tá zoando ou deu ruim mesmo?"
+        texto_limpo = text.strip().lower()
+        palavras = texto_limpo.split()
+
+        # 🔥 risada (kkkk etc)
+        if any(p in texto_limpo for p in ["kkk", "kkkk", "kakaka"]):
+            respostas = [
+                f"kkk boa, {nome}. Manda aí",
+                f"kkkk tô contigo, {nome}. O que foi?",
+                f"kkk aí sim 😄 fala comigo"
+            ]
+            return random.choice(respostas)
+
+        # 🔥 zoeira leve
+        if len(palavras) <= 6 and any(p in texto_limpo for p in ["zoeira", "brincando"]):
+            respostas = [
+                f"kkk beleza, {nome}. Mas manda o que você quer de verdade",
+                f"tá zoando né 😄 fala sério agora",
+                f"boa kkk, mas e aí, qual é a real?"
+            ]
+            return random.choice(respostas)
+
+        # 🔥 possível problema (deu ruim)
+        if any(p in texto_limpo for p in ["deu ruim", "fbi", "policia aqui"]):
+            respostas = [
+                f"calma aí, {nome}. O que aconteceu?",
+                f"opa, {nome}… deu ruim como?",
+                f"fala comigo, {nome}. Qual foi o problema?"
+            ]
+            return random.choice(respostas)
+        
         # =================================
         # DETECTAR MODO EXECUTOR
         # =================================
@@ -636,8 +660,13 @@ class DecisionEngine:
         # 🔒 SALVAR MEMÓRIA (CONTROLADO)
         # =================================
         if not response:
-            response = "Tô contigo. Me fala melhor o que você quer."
 
+            if history and len(history) > 0:
+                response = "tô contigo… mas continua aí que quero entender melhor"
+
+            else:
+                response = "Tô contigo. Me fala melhor o que você quer."
+        
         if ctx.get("allow_memory") and response and len(response) > 15:
             try:
                 memory.save_memory(username, user_input, response, topic)
