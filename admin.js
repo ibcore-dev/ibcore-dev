@@ -73,6 +73,36 @@ async function carregarUsuarios() {
     }
 }
 
+async function carregarMensagens() {
+
+    try {
+        const res = await fetch(API + "/admin/mensagens", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error(data);
+            return;
+        }
+
+        const lista = document.getElementById("lista-mensagens");
+        lista.innerHTML = "";
+
+        data.mensagens.forEach(msg => {
+            const div = document.createElement("div");
+            div.className = "mensagem-item";
+            div.innerText = msg;
+            lista.appendChild(div);
+        });
+
+    } catch (e) {
+        console.error("Erro mensagens:", e);
+    }
+}
 // =========================
 // 📈 GRÁFICO
 // =========================
@@ -91,6 +121,41 @@ function atualizarGrafico(dados) {
     });
 }
 
+async function carregarErros() {
+
+    try {
+        const res = await fetch(API + "/admin/erros", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error(data);
+            return;
+        }
+
+        const lista = document.getElementById("lista-erros");
+        lista.innerHTML = "";
+
+        data.erros.forEach(erro => {
+            const div = document.createElement("div");
+            div.className = "erro-item";
+
+            div.innerHTML = `
+                <strong>${erro.mensagem}</strong><br>
+                <small>${erro.data} | ${erro.rota}</small>
+            `;
+
+            lista.appendChild(div);
+        });
+
+    } catch (e) {
+        console.error("Erro ao carregar erros:", e);
+    }
+}
 // =========================
 // 🚀 INICIAR
 // =========================
@@ -101,4 +166,6 @@ carregarUsuarios();
 setInterval(() => {
     carregarDashboard();
     carregarUsuarios();
+    carregarMensagens();
+    carregarErros(); // 
 }, 5000);
