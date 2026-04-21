@@ -312,58 +312,58 @@ class DecisionEngine:
 
     def process(self, username: str, user_input: str):
 
-    nome = memory.get_profile(username, "nome") 
-    if not nome:
-        nome = username
+        nome = memory.get_profile(username, "nome") 
+        if not nome:
+            nome = username
 
-    if not username:
-        raise ValueError("Username não pode ser vazio")
+        if not username:
+            raise ValueError("Username não pode ser vazio")
 
-    ctx = update_context(username, user_input)
-    text = user_input.lower()
+        ctx = update_context(username, user_input)
+        text = user_input.lower()
 
-    texto_limpo = text.strip()
-    palavras = texto_limpo.split()
+        texto_limpo = text.strip()
+        palavras = texto_limpo.split()
 
-    # 🔥 detectar intenção
-    intent = detect_intent(user_input)
+        # 🔥 detectar intenção
+        intent = detect_intent(user_input)
 
-    # 🔹 despedida
-    if intent == "despedida":
-        respostas = [
-            f"Falou, {nome}. Até mais 👊",
-            f"Beleza, {nome}. Até depois",
-            f"Tamo junto, {nome}",
-            f"Até mais, {nome}. Qualquer coisa chama"
-        ]
-        return random.choice(respostas)
+        # 🔹 despedida
+        if intent == "despedida":
+            respostas = [
+                f"Falou, {nome}. Até mais 👊",
+                f"Beleza, {nome}. Até depois",
+                f"Tamo junto, {nome}",
+                f"Até mais, {nome}. Qualquer coisa chama"
+            ]
+            return random.choice(respostas)
 
-    # 🔹 risada
-    if any(p in texto_limpo for p in ["kkk", "kkkk", "kakaka"]):
-        respostas = [
-            f"kkk boa, {nome}. Manda aí",
-            f"kkkk tô contigo, {nome}. O que foi?",
-            f"kkk aí sim 😄 fala comigo"
-        ]
-        return random.choice(respostas)
+        # 🔹 risada
+        if any(p in texto_limpo for p in ["kkk", "kkkk", "kakaka"]):
+            respostas = [
+                f"kkk boa, {nome}. Manda aí",
+                f"kkkk tô contigo, {nome}. O que foi?",
+                f"kkk aí sim 😄 fala comigo"
+            ]
+            return random.choice(respostas)
 
-    # 🔹 zoeira
-    if len(palavras) <= 6 and any(p in texto_limpo for p in ["zoeira", "brincando"]):
-        respostas = [
-            f"kkk beleza, {nome}. Mas manda o que você quer de verdade",
-            f"tá zoando né 😄 fala sério agora",
-            f"boa kkk, mas e aí, qual é a real?"
-        ]
-        return random.choice(respostas)
+        # 🔹 zoeira
+        if len(palavras) <= 6 and any(p in texto_limpo for p in ["zoeira", "brincando"]):
+            respostas = [
+                f"kkk beleza, {nome}. Mas manda o que você quer de verdade",
+                f"tá zoando né 😄 fala sério agora",
+                f"boa kkk, mas e aí, qual é a real?"
+            ]
+            return random.choice(respostas)
 
-    # 🔹 problema
-    if any(p in texto_limpo for p in ["deu ruim", "fbi", "policia aqui"]):
-        respostas = [
-            f"calma aí, {nome}. O que aconteceu?",
-            f"opa, {nome}… deu ruim como?",
-            f"fala comigo, {nome}. Qual foi o problema?"
-        ]
-        return random.choice(respostas)
+        # 🔹 problema
+        if any(p in texto_limpo for p in ["deu ruim", "fbi", "policia aqui"]):
+            respostas = [
+                f"calma aí, {nome}. O que aconteceu?",
+                f"opa, {nome}… deu ruim como?",
+                f"fala comigo, {nome}. Qual foi o problema?"
+            ]
+            return random.choice(respostas)
 
         # =================================
         # DETECTAR MODO EXECUTOR
