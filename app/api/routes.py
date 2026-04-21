@@ -656,8 +656,17 @@ def listar_erros(current_user: DBUser = Depends(get_current_user)):
     LIMIT 10
     """)
 
-    erros = cursor.fetchall()
+    rows = cursor.fetchall()
 
     conn.close()
+
+    erros = []
+    for row in rows:
+        erros.append({
+            "mensagem": row[0],
+            "rota": row[1],
+            "data": row[2]
+            "tipo": "erro"
+        })
 
     return {"erros": erros}
