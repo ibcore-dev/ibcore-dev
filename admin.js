@@ -95,7 +95,13 @@ async function carregarMensagens() {
         data.mensagens.forEach(msg => {
             const div = document.createElement("div");
             div.className = "mensagem-item";
-            div.innerText = msg;
+
+            div.innerHTML = `
+                <strong>Usuário:</strong> ${msg.pergunta}<br>
+                <strong>Órion:</strong> ${msg.resposta}<br>
+                <small>${msg.data}</small>
+            `;
+
             lista.appendChild(div);
         });
 
@@ -106,9 +112,15 @@ async function carregarMensagens() {
 // =========================
 // 📈 GRÁFICO
 // =========================
+let grafico;
+
 function atualizarGrafico(dados) {
 
-    new Chart(document.getElementById("grafico"), {
+    if (grafico) {
+        grafico.destroy();
+    }
+
+    grafico = new Chart(document.getElementById("grafico"), {
         type: 'line',
         data: {
             labels: ["Seg", "Ter", "Qua", "Qui", "Sex"],
