@@ -250,6 +250,8 @@ def detect_intent(text: str):
     texto_limpo = text.strip()
     palavras = texto_limpo.split()
 
+    is_about_orion = resolve_self_reference(user_input)
+    
     despedidas = [
         "tchau", "até mais", "falou", "vou ali",
         "fui", "até logo", "valeu", "flw", "bye"
