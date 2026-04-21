@@ -250,8 +250,6 @@ def detect_intent(text: str):
     texto_limpo = text.strip()
     palavras = texto_limpo.split()
 
-    is_about_orion = resolve_self_reference(user_input)
-    
     despedidas = [
         "tchau", "até mais", "falou", "vou ali",
         "fui", "até logo", "valeu", "flw", "bye"
@@ -326,8 +324,9 @@ class DecisionEngine:
 
         texto_limpo = text.strip()
         palavras = texto_limpo.split()
+        
+        is_about_orion = resolve_self_reference(user_input)
 
-        # 🔥 detectar intenção
         intent = detect_intent(user_input)
 
         # 🔹 despedida
@@ -645,22 +644,64 @@ class DecisionEngine:
         # =================================
         # 🔒 SALVAR MEMÓRIA (CONTROLADO)
         # =================================
+
         if not response:
 
-            if history and len(history) > 0:
-                response = "tô contigo… mas continua aí que quero entender melhor"
+            respostas_fallback_curto = [
+                "Tô contigo. Me fala melhor o que você quer.",
+                "Explica melhor isso pra mim",
+                "Manda mais um pouco que não peguei tudo ainda"
+            ]
 
+            respostas_fallback_continuidade = [
+                "tô contigo… mas continua aí que quero entender melhor",
+                "quase entendi, só completa a ideia",
+                "vai mandando que já tô pegando o raciocínio"
+            ]
+
+            if history and len(history) > 0:
+                response = random.choice(respostas_fallback_continuidade)
             else:
-                response = "Tô contigo. Me fala melhor o que você quer."
-        
-        if ctx.get("allow_memory") and response and len(response) > 15:
+                response = random.choice(respostas_fallback_curto)
+
+
+        # =================================
+        # 🧠 FILTRO DE MEMÓRIA (EVITAR LIXO)
+        # =================================
+
+        bloquear_memoria = False
+
+        # 🔹 não salvar fallback
+        if any(frase in response.lower() for frase in [
+            "tô contigo",
+            "explica melhor",
+            "não peguei",
+            "continua aí",
+            "quase entendi"
+        ]):
+            bloquear_memoria = True
+
+        # 🔹 não salvar resposta muito curta
+        if len(response.strip()) < 20:
+            bloquear_memoria = True
+
+        # 🔹 não salvar mensagens muito vagas do usuário
+        if user_input and len(user_input.strip()) < 5:
+            bloquear_memoria = True
+
+
+        # =================================
+        # 💾 SALVAR MEMÓRIA (SE FOR VÁLIDO)
+        # =================================
+
+        if ctx.get("allow_memory") and response and not bloquear_memoria:
             try:
                 memory.save_memory(username, user_input, response, topic)
             except:
                 pass
 
-        return response
 
+        return response
     # ===============================
     # UTILITÁRIOS (FORA DO PROCESS)
     # ===============================
