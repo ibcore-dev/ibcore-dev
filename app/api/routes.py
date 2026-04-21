@@ -643,7 +643,7 @@ def suggestions(current_user: DBUser = Depends(get_current_user), db: Session = 
         for u in users
     ]
 
-@router.get("/admin/errors")
+@router.get("/admin/erros")
 def listar_erros(current_user: DBUser = Depends(get_current_user)):
 
     try:

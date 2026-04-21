@@ -161,6 +161,8 @@ async function carregarErros() {
 // =========================
 carregarDashboard();
 carregarUsuarios();
+carregarMensagens();  // 🔥 faltava
+carregarErros();      // 🔥 faltava
 
 // 🔄 Atualiza a cada 5 segundos
 setInterval(() => {
