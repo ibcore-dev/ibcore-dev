@@ -32,7 +32,7 @@ class GroqProvider(LLMProvider):
                     }
                 ],
                 model="llama-3.1-8b-instant",
-                temperature=0.5
+                temperature=0.3
             )
 
             if not chat or not chat.choices:
