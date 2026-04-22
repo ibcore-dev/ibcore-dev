@@ -1,6 +1,5 @@
 const API = "https://orion-api-d5gp.onrender.com";
 
-// 🔐 TOKEN
 let token = localStorage.getItem("token");
 
 if (!token) {
@@ -23,14 +22,15 @@ async function carregarDashboard() {
         const data = await res.json();
 
         if (!res.ok) {
-            console.error(data);
+            console.error("Erro dashboard:", data);
             return;
         }
 
-        document.getElementById("usuarios").innerText = data.usuarios;
-        document.getElementById("mensagens").innerText = data.mensagens;
-        document.getElementById("ia").innerText = data.ia;
-        document.getElementById("erros").innerText = data.erros;
+        // 🔥 atualiza cards
+        document.getElementById("usuarios").innerText = data.usuarios || 0;
+        document.getElementById("mensagens").innerText = data.mensagens || 0;
+        document.getElementById("ia").innerText = data.ia || 0;
+        document.getElementById("erros").innerText = data.erros || 0;
 
         atualizarGrafico(data.historico);
 
@@ -54,11 +54,14 @@ async function carregarUsuarios() {
         const data = await res.json();
 
         if (!res.ok) {
-            console.error(data);
+            console.error("Erro usuários:", data);
             return;
         }
 
         const lista = document.getElementById("lista-usuarios");
+
+        if (!lista) return;
+
         lista.innerHTML = "";
 
         data.usuarios.forEach(user => {
@@ -73,31 +76,9 @@ async function carregarUsuarios() {
     }
 }
 
-
 // =========================
-// 📈 GRÁFICO
+// ⚠️ ERROS
 // =========================
-let chartInstance = null;
-
-function atualizarGrafico(dados) {
-
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
-
-    chartInstance = new Chart(document.getElementById("grafico"), {
-        type: 'line',
-        data: {
-            labels: ["Seg", "Ter", "Qua", "Qui", "Sex"],
-            datasets: [{
-                label: "Uso",
-                data: dados,
-                tension: 0.4
-            }]
-        }
-    });
-}
-
 async function carregarErros() {
 
     try {
@@ -110,14 +91,18 @@ async function carregarErros() {
         const data = await res.json();
 
         if (!res.ok) {
-            console.error(data);
+            console.error("Erro ao buscar erros:", data);
             return;
         }
 
         const lista = document.getElementById("lista-erros");
+
+        if (!lista) return;
+
         lista.innerHTML = "";
 
         data.erros.forEach(erro => {
+
             const div = document.createElement("div");
             div.className = "erro-item";
 
@@ -133,16 +118,61 @@ async function carregarErros() {
         console.error("Erro ao carregar erros:", e);
     }
 }
+
+// =========================
+// 📈 GRÁFICO (CORRIGIDO)
+// =========================
+let chartInstance = null;
+
+function atualizarGrafico(dados) {
+
+    const canvas = document.getElementById("grafico");
+
+    if (!canvas) return;
+
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+
+    const dadosSeguros = Array.isArray(dados) ? dados : [0, 0, 0, 0, 0];
+
+    chartInstance = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: ["Seg", "Ter", "Qua", "Qui", "Sex"],
+            datasets: [{
+                label: "Uso",
+                data: dadosSeguros,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
 // =========================
 // 🚀 INICIAR
 // =========================
-carregarDashboard();
-carregarUsuarios();
-carregarErros();      // 🔥 faltava
+function iniciarPainel() {
+    console.log("🚀 Painel iniciado");
 
-// 🔄 Atualiza a cada 5 segundos
-setInterval(() => {
     carregarDashboard();
     carregarUsuarios();
-    carregarErros(); // 
+    carregarErros();
+}
+
+// chama uma vez
+iniciarPainel();
+
+// 🔄 Atualização automática
+setInterval(() => {
+    console.log("🔄 Atualizando...");
+
+    carregarDashboard();
+    carregarUsuarios();
+    carregarErros();
+
 }, 5000);
