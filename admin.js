@@ -133,7 +133,7 @@ function atualizarGrafico(dados) {
 
     // 🔥 cria só uma vez
     if (!chartInstance) {
-        chartInstance = new Chart(canvas, {
+        chartInstance = {
             type: 'line',
             data: {
                 labels: ["Seg", "Ter", "Qua", "Qui", "Sex"],
