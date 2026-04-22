@@ -35,8 +35,8 @@ def log_error(message, route, tipo="error"):
 
     cursor.execute("""
     INSERT INTO error_logs (message, route)
-    VALUES (?, ?, ?)
-    """, (message, route, tipo))
+    VALUES (?, ?)
+    """, (mensagem, rota))
 
     conn.commit()
     conn.close()
