@@ -62,7 +62,6 @@ class UserLogin(BaseModel):
 class CommandInput(BaseModel):
     input: str
 
-
 class ProfileUpdate(BaseModel):
     nome: Optional[str] = None
     bio: Optional[str] = None
