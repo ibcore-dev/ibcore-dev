@@ -151,9 +151,7 @@ function atualizarGrafico(dados) {
         return;
     }
 
-    // 🔄 só atualiza dados
-    chartInstance.data.datasets[0].data = dadosSeguros;
-    chartInstance.update();
+
 }
 
 // =========================
