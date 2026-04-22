@@ -34,7 +34,7 @@ def log_error(message, route, tipo="error"):
     """)
 
     cursor.execute("""
-    INSERT INTO error_logs (message, route, type)
+    INSERT INTO error_logs (message, route)
     VALUES (?, ?, ?)
     """, (message, route, tipo))
 
@@ -112,7 +112,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 
     token = create_token({"sub": str(db_user.id)})
     
-    log_error(f"Usuário {db_user.username} logou", "/login", "info")
+    log_error(f"Usuário {db_user.username} logou", "/login")
     
     return {"access_token": token}
 # =========================
