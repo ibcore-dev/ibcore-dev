@@ -127,30 +127,33 @@ let chartInstance = null;
 function atualizarGrafico(dados) {
 
     const canvas = document.getElementById("grafico");
-
     if (!canvas) return;
-
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
 
     const dadosSeguros = Array.isArray(dados) ? dados : [0, 0, 0, 0, 0];
 
-    chartInstance = new Chart(canvas, {
-        type: 'line',
-        data: {
-            labels: ["Seg", "Ter", "Qua", "Qui", "Sex"],
-            datasets: [{
-                label: "Uso",
-                data: dadosSeguros,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
+    // 🔥 cria só uma vez
+    if (!chartInstance) {
+        chartInstance = new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: ["Seg", "Ter", "Qua", "Qui", "Sex"],
+                datasets: [{
+                    label: "Uso",
+                    data: dadosSeguros,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        return;
+    }
+
+    // 🔄 só atualiza dados
+    chartInstance.data.datasets[0].data = dadosSeguros;
+    chartInstance.update();
 }
 
 // =========================
