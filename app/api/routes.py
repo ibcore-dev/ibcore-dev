@@ -28,15 +28,14 @@ def log_error(message, route, tipo="error"):
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         message TEXT,
         route TEXT,
-        type TEXT,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
     """)
 
     cursor.execute("""
-    INSERT INTO error_logs (message, route, type)
-    VALUES (?, ?, ?)
-    """, (message, route, tipo))
+    INSERT INTO error_logs (message, route)
+    VALUES (?, ?)
+    """, (message, route))
 
     conn.commit()
     conn.close()
@@ -655,9 +654,8 @@ def listar_erros(current_user: DBUser = Depends(get_current_user)):
         cursor = conn.cursor()
 
         cursor.execute("""
-        SELECT message, route, timestamp, type
+        SELECT message, route, timestamp
         FROM error_logs
-        WHERE type = 'error'
         ORDER BY id DESC
         LIMIT 10
         """)
@@ -682,8 +680,7 @@ def listar_erros(current_user: DBUser = Depends(get_current_user)):
                 {
                     "mensagem": str(e),
                     "rota": "/admin/errors",
-                    "data": "agora",
-                    "tipo": "error"
+                    "data": "agora"
                 }
             ]
         }
