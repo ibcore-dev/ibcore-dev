@@ -584,9 +584,8 @@ class DecisionEngine:
         pending_question = detect_pending_question(history)
         continuation = continue_conversation(pending_question, user_input)
 
-        if continuation and intent == "conversa"
-        len(user_input.split()) > 5:
-          return continuation
+        if continuation and intent == "conversa":
+           return continuation
 
         # ===============================
         # PERFIL
