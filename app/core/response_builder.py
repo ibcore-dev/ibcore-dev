@@ -850,7 +850,7 @@ def build_response(
     Usuário: {username}
     Tema: {topic}
     Histórico recente:
-    {history[-3:]}
+    {history[-5:]}
 
     Mensagem:
     {user_input}
