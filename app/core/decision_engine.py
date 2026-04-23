@@ -397,9 +397,7 @@ class DecisionEngine:
         elif state == "planejamento":
             mode = "estrategico"
         state = ctx.get("state", "conversa")
-
-        # CONTEXTO
-        ctx = update_context(username, user_input)
+        
 
         # PEGAR ESTADO E INTENT PRIMEIRO
         intent = ctx.get("intent", "conversa")
@@ -414,13 +412,14 @@ class DecisionEngine:
         intent = ctx.get("intent")
 
         if not intent:
-            if len(user_input.split()) < 3:
+           if len(user_input.split()) < 3:
                 intent = detect_intent(user_input)
-            else:
-                intent = detect_intent_llm(user_input)
+           else:
+             intent = detect_intent_llm(user_input)
 
         if not intent:
-            intent = "conversa"
+           intent = "conversa"
+            
         # =================================
         # RESPOSTAS DIRETAS (ANTES DE TUDO)
         # =================================
@@ -533,7 +532,7 @@ class DecisionEngine:
         if len(user_input.split()) <= 2 and intent == "conversa":
             intent = "resposta"
 
-        history = memory.get_last_messages(username, 50) or []
+        history = memory.get_last_messages(username, 10) or []
 
         main_topic = detect_main_topic(history)
         if main_topic and topic == "geral":
@@ -585,8 +584,9 @@ class DecisionEngine:
         pending_question = detect_pending_question(history)
         continuation = continue_conversation(pending_question, user_input)
 
-        if continuation:
-            return continuation
+        if continuation and intent == "conversa" and 
+        len(user_input.split()) > 5:
+          return continuation
 
         # ===============================
         # PERFIL
@@ -625,7 +625,7 @@ class DecisionEngine:
         response = build_response(
             user_input=user_input,
             username=username,
-            response=None,
+            response=thought if thought else user_input,
             mode=mode,
             topic=topic,
             nome_real=nome_real,
