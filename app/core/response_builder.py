@@ -65,8 +65,34 @@ def expand_topic_response(user_input, topic, base_response):
         "Tem desde o básico até níveis mais avançados.",
         "Dá pra analisar tanto na prática quanto na teoria."
     ])
+    return f"{abertura} {desenvolvimento} {direcao}"
+    
+def format_history(history):
+    formatted = ""
 
-    return f"{abertura} {desenvolvimento} {direcao}"    
+    for h in history[-7:]:  # pega 7 boas mensagens
+
+        try:
+            if isinstance(h, dict):
+                user_msg = h.get("input", "")
+                bot_msg = h.get("response", "")
+            elif isinstance(h, tuple):
+                user_msg = str(h[0]) if len(h) > 0 else ""
+                bot_msg = str(h[1]) if len(h) > 1 else ""
+            else:
+                continue
+
+            if user_msg:
+                formatted += f"Usuário: {user_msg}\n"
+
+            if bot_msg:
+                formatted += f"Órion: {bot_msg}\n"
+
+        except:
+            continue
+
+    return formatted
+        
 def build_response(
     user_input,
     username,
@@ -857,7 +883,7 @@ def build_response(
     Usuário: {username}
     Tema: {topic}
     Histórico recente:
-    {history[-2:]}
+    {format_history(history)}
 
     Mensagem:
     {user_input}
