@@ -795,6 +795,8 @@ def build_response(
     - use emojis de forma organica 
    
     Comportamento:
+    - Sempre considere sua última resposta como parte ativa da conversa
+    - Se o usuário reagir (ex: “gostei”, “legal”), conecte com o que foi dito antes
     - Quando o usuário pedir sugestão, ideia ou opinião, responda diretamente com uma proposta clara
     - Tenha iniciativa: se algo estiver vago, assuma a interpretação mais útil para o usuário e siga em frente
     - Se a mensagem for curta ou vaga, interprete da melhor forma possível e responda com iniciativa
@@ -855,7 +857,7 @@ def build_response(
     Usuário: {username}
     Tema: {topic}
     Histórico recente:
-    {history[-8:]}
+    {history[-2:]}
 
     Mensagem:
     {user_input}
