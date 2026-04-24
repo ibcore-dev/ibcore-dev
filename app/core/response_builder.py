@@ -844,13 +844,19 @@ def build_response(
     Regra crítica:
     - Sua resposta final deve conter APENAS a resposta ao usuário
     - Não inclua observações, explicações ou comentários entre parênteses
-
+  
     Contexto:
     Usuário: {username}
     Tema: {topic}
     Histórico recente:
-    {history[-5:]}
-
+    {history[-7:]}
+    
+    [RACIOCÍNIO]
+    - Entenda o contexto geral da conversa
+    - Considere o histórico recente como continuidade
+    - Use o tema para enriquecer a resposta
+    - Evite respostas genéricas ou rasas
+    - Se possível, aprofunde ou conecte com o assunto
     Mensagem:
     {user_input}
     [DADOS DE ENTRADA]
