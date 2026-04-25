@@ -965,4 +965,4 @@ def build_response(
     else:
         resposta_final = "Hmm, não consegui responder isso agora."
 
-return resposta_final
+    return resposta_final
