@@ -112,7 +112,7 @@ def build_response(
     conversation_context=""  # 🔥 NOVO
 ):
    
-    base_response = response if response else user_input
+    base_response = response if response else ""
     memory_hint = ""
     # =================================================
     # CONTINUIDADE DE CONVERSA
@@ -396,16 +396,16 @@ def build_response(
     if domain == "automotivo" and not knowledge:
 
         if "filtro" in user_input.lower():
-            response = "O filtro de ar pode afetar..."
+            base_response = "O filtro de ar pode afetar..."
 
         elif "vela" in user_input.lower():
-            response = "Velas desgastadas podem causar..."
+            base_response = "Velas desgastadas podem causar..."
 
         elif "falha" in user_input.lower():
-            response = "Se o carro está falhando..."
+            base_response = "Se o carro está falhando..."
 
         else:
-            response = "Podemos analisar consumo, ignição..."
+            base_response = "Podemos analisar consumo, ignição..."
 
     use_llm = True  # 🔥 força LLM
     
