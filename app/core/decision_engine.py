@@ -648,7 +648,7 @@ class DecisionEngine:
             response = build_response(
                 user_input=user_input,
                 username=username,
-                response=llm_response,
+                response=None,
                 mode=mode,
                 topic=topic,
                 nome_real=nome_real,
@@ -668,7 +668,7 @@ class DecisionEngine:
         # 🔥 FALLBACK FINAL (OBRIGATÓRIO)
         # =================================
         if not response or not response.strip():
-            response = llm_response or "Hmm, não consegui responder agora."
+            response = "Hmm, não consegui responder agora."
         # =================================
         # 🧠 FILTRO DE MEMÓRIA (ANTES DE SALVAR)
         # =================================
