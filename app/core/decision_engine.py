@@ -662,7 +662,6 @@ class DecisionEngine:
             except Exception as e:
                 print("Erro ao salvar memória:", e)
 
-        
         # =================================
         # 🧠 FILTRO DE MEMÓRIA (EVITAR LIXO)
         # =================================
@@ -671,21 +670,21 @@ class DecisionEngine:
 
         # 🔹 não salvar fallback
         if response and any(frase in response.lower() for frase in [
-            "tô contigo",
-            "explica melhor",
-            "não peguei",
-            "continua aí",
-            "quase entendi"
+           "tô contigo",
+           "explica melhor",
+           "não peguei",
+           "continua aí",
+           "quase entendi"
         ]):
-        bloquear_memoria = True
+           bloquear_memoria = True
 
-            # 🔹 não salvar resposta muito curta
-            if len(response.strip()) < 20:
-                bloquear_memoria = True
+        # 🔹 não salvar resposta muito curta
+        if response and len(response.strip()) < 20:
+           bloquear_memoria = True
 
-            # 🔹 não salvar mensagens muito vagas do usuário
-            if user_input and len(user_input.strip()) < 5:
-                bloquear_memoria = True
+        # 🔹 não salvar mensagens muito vagas do usuário
+        if user_input and len(user_input.strip()) < 5:
+           bloquear_memoria = True
 
 
         # =================================
