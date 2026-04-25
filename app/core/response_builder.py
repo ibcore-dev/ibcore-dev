@@ -781,7 +781,7 @@ def build_response(
     ESTADO EMOCIONAL:
     {emotional_score}
 
-    MEMÓRIA RELEVANTE:
+    MEMÓRIA INTERNA (NÃO MOSTRAR DIRETAMENTE):
     {memory_hint}
     ---
 
@@ -802,7 +802,11 @@ def build_response(
     - Entenda o contexto geral da conversa
     - Considere o histórico recente como continuidade
     - Se possível, aprofunde ou conecte com o assunto
-  
+    - Use a memória apenas como base para entender o contexto
+    - Nunca repita ou liste a memória diretamente
+    - Nunca responda como um resumo da conversa
+    - Use a memória de forma natural e implícita
+    
     Como você fala:
     -Pode usar expressões naturais: "boa", "entendi", "faz sentido"
     - Respostas claras, sem texto desnecessário
