@@ -10,3 +10,4 @@ python-multipart
 python-dotenv
 httpx
 pytz
+psycopg2-binary
