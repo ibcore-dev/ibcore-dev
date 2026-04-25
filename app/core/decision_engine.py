@@ -516,7 +516,7 @@ class DecisionEngine:
 
         history = []
         for msg in history_db:
-        memory_hint = gerar_memoria_inteligente(history)    
+            memory_hint = gerar_memoria_inteligente(history)    
             history.append({
                 "input": msg.content if msg.role == "user" else "",
                 "response": msg.content if msg.role == "assistant" else ""
