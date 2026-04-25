@@ -648,7 +648,7 @@ class DecisionEngine:
             response = build_response(
                 user_input=user_input,
                 username=username,
-                response=None,
+                response=llm_response,
                 mode=mode,
                 topic=topic,
                 nome_real=nome_real,
@@ -663,6 +663,12 @@ class DecisionEngine:
                 self_reference=is_about_orion,
                 conversation_context=conversation_context  # 🔥 NOVO
             )
+       
+        # =================================
+        # 🔥 FALLBACK FINAL (OBRIGATÓRIO)
+        # =================================
+        if not response or not response.strip():
+            response = llm_response or "Hmm, não consegui responder agora."
         # =================================
         # 🧠 FILTRO DE MEMÓRIA (ANTES DE SALVAR)
         # =================================
