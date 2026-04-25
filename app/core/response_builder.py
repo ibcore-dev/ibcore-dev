@@ -934,6 +934,7 @@ def build_response(
     # =================================================
 
     resposta_final = None
+    llm_response = None  # 🔥 GARANTE QUE SEMPRE EXISTE
 
     if use_llm:
         print("🔥 LLM CHAMADO")
@@ -953,11 +954,15 @@ def build_response(
 
         except Exception as e:
             print("❌ ERRO LLM:", str(e))
+            llm_response = None
             resposta_final = None
 
 
-    # fallback garantido
-    if not resposta_final:
-        resposta_final = base_response or "Hmm, não consegui responder isso agora."
+    # 🔥 FALLBACK FINAL (BLINDADO)
+    if not resposta_final or not str(resposta_final).strip():
+        if base_response and str(base_response).strip():
+            resposta_final = base_response
+    else:
+        resposta_final = "Hmm, não consegui responder isso agora."
 
-    return resposta_final
+return resposta_final
