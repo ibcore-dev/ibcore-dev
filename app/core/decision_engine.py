@@ -663,19 +663,8 @@ class DecisionEngine:
                 self_reference=is_about_orion,
                 conversation_context=conversation_context  # 🔥 NOVO
             )
-        # ===============================
-        # 💾 SALVAR MEMÓRIA (AGORA SIM FUNCIONA)
-        # ===============================
-        if response and not bloquear_memoria:
-            try:
-                db.add(Message(username=username, role="user", content=user_input))
-                db.add(Message(username=username, role="assistant", content=response))
-                db.commit()
-            except Exception as e:
-                print("Erro ao salvar memória:", e)
-
         # =================================
-        # 🧠 FILTRO DE MEMÓRIA (EVITAR LIXO)
+        # 🧠 FILTRO DE MEMÓRIA (ANTES DE SALVAR)
         # =================================
 
         bloquear_memoria = False
@@ -699,19 +688,17 @@ class DecisionEngine:
            bloquear_memoria = True
 
 
-        # =================================
-        # 💾 SALVAR MEMÓRIA (SE FOR VÁLIDO)
-        # =================================
+        # ===============================
+        # 💾 SALVAR MEMÓRIA (AGORA SIM FUNCIONA)
+        # ===============================
 
         if response and not bloquear_memoria:
             try:
-                memory.save_memory(username, user_input, response, topic)
-            except:
-                pass
-
-        db.close()
-
-        return response
+                db.add(Message(username=username, role="user", content=user_input))
+                db.add(Message(username=username, role="assistant", content=response))
+                db.commit()
+            except Exception as e:
+                print("Erro ao salvar memória:", e)
     # ===============================
     # UTILITÁRIOS (FORA DO PROCESS)
     # ===============================
