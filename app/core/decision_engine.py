@@ -707,6 +707,7 @@ class DecisionEngine:
                 db.commit()
             except Exception as e:
                 print("Erro ao salvar memória:", e)
+        return response
     # ===============================
     # UTILITÁRIOS (FORA DO PROCESS)
     # ===============================
