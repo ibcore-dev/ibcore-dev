@@ -958,11 +958,9 @@ def build_response(
             resposta_final = None
 
 
-    # 🔥 FALLBACK FINAL (BLINDADO)
+   # 🔥 FALLBACK FINAL (CORRIGIDO)
     if not resposta_final or not str(resposta_final).strip():
         if base_response and str(base_response).strip():
             resposta_final = base_response
-    else:
-        resposta_final = "Hmm, não consegui responder isso agora."
-
-    return resposta_final
+        else:
+            resposta_final = "Hmm, não consegui responder isso agora."
