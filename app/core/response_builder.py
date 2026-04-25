@@ -118,9 +118,7 @@ def build_response(
     # CONTINUIDADE DE CONVERSA
     # =================================================
 
-    conversation_context = "" 
-
-    if history and len(history) > 0:
+    if not conversation_context and history:
 
         last_messages = history[-12:]
 
