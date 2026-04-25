@@ -305,7 +305,34 @@ def resolve_self_reference(user_input):
             return True
 
     return False
+# =================================
+# 🧠 MEMÓRIA INTELIGENTE
+# =================================
+def gerar_memoria_inteligente(history):
+    if not history:
+        return ""
 
+    pontos = []
+
+    for msg in history:
+        texto = (
+            (msg.get("input") or "") + " " +
+            (msg.get("response") or "")
+        ).lower()
+
+        if "reinici" in texto:
+            pontos.append("O sistema do Órion foi reiniciado recentemente")
+
+        if "erro" in texto:
+            pontos.append("Houve erros recentes no sistema")
+
+        if "memoria" in texto or "memória" in texto:
+            pontos.append("Usuário está trabalhando na memória do Órion")
+
+        if "projeto" in texto:
+            pontos.append("Usuário está desenvolvendo o projeto Órion")
+
+    return "\n".join(set(pontos))
 # =================================================
 # ENGINE PRINCIPAL
 # =================================================
@@ -489,11 +516,13 @@ class DecisionEngine:
 
         history = []
         for msg in history_db:
+        memory_hint = gerar_memoria_inteligente(history)    
             history.append({
                 "input": msg.content if msg.role == "user" else "",
                 "response": msg.content if msg.role == "assistant" else ""
             })
-
+        memory_hint = gerar_memoria_inteligente(history)
+        
         # ===============================
         # GOAL / PLANNER (CONTROLADO POR CONTEXTO)
         # ===============================
@@ -663,6 +692,7 @@ class DecisionEngine:
                 behavior_pattern=behavior_pattern,
                 thought=thought,
                 self_reference=is_about_orion,
+                memory_hint=memory_hint,
                 conversation_context=conversation_context  # 🔥 NOVO
             )
        
