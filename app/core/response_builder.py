@@ -930,11 +930,10 @@ def build_response(
 
         base_response = " ".join(base_response.split())
     # =================================================
-    # RESPOSTA FINAL
+    # RESPOSTA FINAL (CORRIGIDO E BLINDADO)
     # =================================================
 
     resposta_final = None
-    llm_response = None  # 🔥 GARANTE QUE SEMPRE EXISTE
 
     if use_llm:
         print("🔥 LLM CHAMADO")
@@ -945,22 +944,23 @@ def build_response(
                 history=history,
                 system_prompt=prompt
             )
+
             print("🧠 LLM RESPONSE:", llm_response)
 
             if llm_response:
-                texto = str(llm_response).strip()
-                if texto:
-                    resposta_final = texto
+                resposta_final = str(llm_response).strip()
 
         except Exception as e:
             print("❌ ERRO LLM:", str(e))
-            llm_response = None
-            resposta_final = None
 
 
-   # 🔥 FALLBACK FINAL (CORRIGIDO)
+    # 🔥 FALLBACK FINAL (SEM QUEBRAR RESPOSTA BOA)
     if not resposta_final or not str(resposta_final).strip():
         if base_response and str(base_response).strip():
             resposta_final = base_response
         else:
             resposta_final = "Hmm, não consegui responder isso agora."
+
+    print("✅ RETORNANDO BUILDER:", resposta_final)
+
+    return resposta_final
