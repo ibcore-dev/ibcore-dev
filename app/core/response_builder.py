@@ -297,7 +297,7 @@ def build_response(
     contexto_texto = ""
 
     if conversation_context:
-    contexto_texto += f" Considerando o que você disse antes: {conversation_context[-200:]}"
+        contexto_texto += f" Considerando o que você disse antes: {conversation_context[-200:]}"
     
     if pessoa:
         contexto_texto += f" Você mencionou sua {pessoa} antes."
