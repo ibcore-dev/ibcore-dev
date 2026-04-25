@@ -521,7 +521,7 @@ class DecisionEngine:
                 "input": msg.content if msg.role == "user" else "",
                 "response": msg.content if msg.role == "assistant" else ""
             })
-        memory_hint = gerar_memoria_inteligente(history)
+        memory_hint = gerar_memoria_inteligente(history)[:300]
         
         # ===============================
         # GOAL / PLANNER (CONTROLADO POR CONTEXTO)
