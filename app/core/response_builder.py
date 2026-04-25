@@ -300,8 +300,8 @@ def build_response(
     if pessoa:
         contexto_texto += f" Você mencionou sua {pessoa} antes."
 
-    if assunto == "orion" and topic == "projeto":
-        contexto_texto += " Voltando ao projeto Órion."
+    if assunto and topic == "projeto":
+        contexto_texto += f" Voltando ao tema {assunto}."
 
     # =================================================
     # IDENTIDADE BASE
