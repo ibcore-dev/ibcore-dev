@@ -406,8 +406,6 @@ def build_response(
 
         else:
             base_response = "Podemos analisar consumo, ignição..."
-
-    use_llm = True  # 🔥 força LLM
     
     if domain == "financeiro":
 
