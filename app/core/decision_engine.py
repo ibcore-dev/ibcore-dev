@@ -675,25 +675,25 @@ class DecisionEngine:
         
         print("ANTES:", response)
         
-            response = build_response(
-                user_input=user_input,
-                username=username,
-                response=response,
-                mode=mode,
-                topic=topic,
-                nome_real=nome_real,
-                emotional_score=emotional_value,
-                history=history,
-                priority=priority,
-                intent=intent,
-                cognitive_identity=cognitive_identity,
-                relational_context=relational_context,
-                behavior_pattern=behavior_pattern,
-                thought=thought,
-                self_reference=is_about_orion,
-                memory_hint=memory_hint,
-                conversation_context=conversation_context  # 🔥 NOVO
-            )
+        response = build_response(
+            user_input=user_input,
+            username=username,
+            response=response,
+            mode=mode,
+            topic=topic,
+            nome_real=nome_real,
+            emotional_score=emotional_value,
+            history=history,
+            priority=priority,
+            intent=intent,
+            cognitive_identity=cognitive_identity,
+            relational_context=relational_context,
+            behavior_pattern=behavior_pattern,
+            thought=thought,
+            self_reference=is_about_orion,
+            memory_hint=memory_hint,
+            conversation_context=conversation_context  # 🔥 NOVO
+        )
        
         # =================================
         # 🔥 FALLBACK FINAL (OBRIGATÓRIO)
