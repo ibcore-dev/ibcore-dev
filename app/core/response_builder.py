@@ -730,11 +730,15 @@ def build_response(
                 base_response = "Boa pergunta. Eu diria que..."
 
     if len(base_response) > 300:
-        base_response = base_response[:300].rsplit(".", 1)[0] + "."
+        corte = base_response[:300]
+        if "." in corte:
+            base_response = corte.rsplit(".", 1)[0] + "."
+        else:
+            base_response = corte
     # =================================================
     # DECISÃO DE USO DO LLM
     # =================================================
-    use_llm = True
+    use_llm = False
     llm_response = None
 
     abertura = random.choice([
@@ -927,13 +931,6 @@ def build_response(
                 base_response = base_response.replace(b, "")
 
         base_response = " ".join(base_response.split())
-
-        # 🔥 FORÇAR TOM HUMANO
-        if len(base_response) > 20:
-            if not any(p in base_response.lower() for p in ["kkk", "boa", "fala", "cara", "rapaz"]):
-                base_response = f"Boa, {username}. {base_response}"
-
-
     # =================================================
     # RESPOSTA FINAL
     # =================================================
