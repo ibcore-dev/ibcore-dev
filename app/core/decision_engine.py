@@ -631,7 +631,19 @@ class DecisionEngine:
 
         relational_context = build_relational_context(username)
         behavior_pattern = detect_behavior_pattern(username)
-        
+        conversation_context = ""
+
+        if history:
+            mensagens = []
+
+            for h in history:
+                if isinstance(h, dict):
+                    msg = h.get("input", "")
+                    if msg:
+                        mensagens.append(msg)
+
+            conversation_context = " ".join(mensagens[-10:])
+       
         if not response:
             response = build_response(
                 user_input=user_input,
