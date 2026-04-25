@@ -111,8 +111,8 @@ def build_response(
     self_reference=False,
     conversation_context=""  # 🔥 NOVO
 ):
-
-    base_response = response if response else ""
+   
+    base_response = response if response else user_input
     memory_hint = ""
     # =================================================
     # CONTINUIDADE DE CONVERSA
