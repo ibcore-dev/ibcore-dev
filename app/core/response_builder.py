@@ -109,6 +109,7 @@ def build_response(
     behavior_pattern=None,
     thought=None,
     self_reference=False,
+    memory_hint="",
     conversation_context=""  # 🔥 NOVO
 ):
    
