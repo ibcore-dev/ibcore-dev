@@ -29,6 +29,8 @@ import pytz
 from app.core.intent_engine import detect_intent, detect_intent_llm, detect_emotion
 from app.core.intent_engine import detect_emotion
 import random
+from database.database import SessionLocal
+from database.models import Message
 
 # =================================================
 # BIBLIOTECA EMOCIONAL — ORION
@@ -475,17 +477,26 @@ class DecisionEngine:
         if intent == "data":
             return f"Hoje é {self.get_date_brasilia()}"
         # ===============================
-        # SAFE INIT
+        # MEMÓRIA REAL (BANCO)
         # ===============================
+        db = SessionLocal()
+
+        history_db = db.query(Message)\
+            .filter(Message.username == username)\
+            .order_by(Message.created_at.desc())\
+            .limit(10)\
+            .all()[::-1]
+
         history = []
-        llm_response = None  # 🔥 GARANTE EXISTÊNCIA
-        response = None
-        thought = ""
+        for msg in history_db:
+            history.append({
+                "input": msg.content if msg.role == "user" else "",
+                "response": msg.content if msg.role == "assistant" else ""
+            })
 
         # ===============================
         # GOAL / PLANNER (CONTROLADO POR CONTEXTO)
         # ===============================
-
         if ctx.get("state") in ["planejamento", "objetivo"] and len(user_input.split()) > 4:
             goal_check = goal_response(username, user_input)
             if goal_check:
@@ -531,8 +542,6 @@ class DecisionEngine:
         
         if len(user_input.split()) <= 2 and intent == "conversa":
             intent = "resposta"
-
-        history = memory.get_last_messages(username, 10) or []
 
         main_topic = detect_main_topic(history)
         if main_topic and topic == "geral":
@@ -584,8 +593,10 @@ class DecisionEngine:
         pending_question = detect_pending_question(history)
         continuation = continue_conversation(pending_question, user_input)
 
-        if continuation and intent == "conversa":
-           return continuation
+        if continuation:
+            response = continuation
+        else:
+            response = None
 
         # ===============================
         # PERFIL
@@ -621,49 +632,37 @@ class DecisionEngine:
         relational_context = build_relational_context(username)
         behavior_pattern = detect_behavior_pattern(username)
         
-        response = build_response(
-            user_input=user_input,
-            username=username,
-            response=thought if thought else user_input,
-            mode=mode,
-            topic=topic,
-            nome_real=nome_real,
-            emotional_score=emotional_value,
-            history=history,
-            priority=priority,
-            intent=intent,
-            cognitive_identity=cognitive_identity,
-            relational_context=relational_context,
-            behavior_pattern=behavior_pattern,
-            thought=thought,
-            self_reference=is_about_orion,
-        )
-
-        return response
-        # =================================
-        # 🔒 SALVAR MEMÓRIA (CONTROLADO)
-        # =================================
-
         if not response:
+            response = build_response(
+                user_input=user_input,
+                username=username,
+                response=None,
+                mode=mode,
+                topic=topic,
+                nome_real=nome_real,
+                emotional_score=emotional_value,
+                history=history,
+                priority=priority,
+                intent=intent,
+                cognitive_identity=cognitive_identity,
+                relational_context=relational_context,
+                behavior_pattern=behavior_pattern,
+                thought=thought,
+                self_reference=is_about_orion,
+                conversation_context=conversation_context  # 🔥 NOVO
+            )
+        # ===============================
+        # 💾 SALVAR MEMÓRIA (AGORA SIM FUNCIONA)
+        # ===============================
+        if response and not bloquear_memoria:
+            try:
+                db.add(Message(username=username, role="user", content=user_input))
+                db.add(Message(username=username, role="assistant", content=response))
+                db.commit()
+            except Exception as e:
+                print("Erro ao salvar memória:", e)
 
-            respostas_fallback_curto = [
-                "Tô contigo. Me fala melhor o que você quer.",
-                "Explica melhor isso pra mim",
-                "Manda mais um pouco que não peguei tudo ainda"
-            ]
-
-            respostas_fallback_continuidade = [
-                "tô contigo… mas continua aí que quero entender melhor",
-                "quase entendi, só completa a ideia",
-                "vai mandando que já tô pegando o raciocínio"
-            ]
-
-            if history and len(history) > 0:
-                response = random.choice(respostas_fallback_continuidade)
-            else:
-                response = random.choice(respostas_fallback_curto)
-
-
+        
         # =================================
         # 🧠 FILTRO DE MEMÓRIA (EVITAR LIXO)
         # =================================
@@ -671,14 +670,14 @@ class DecisionEngine:
         bloquear_memoria = False
 
         # 🔹 não salvar fallback
-        if any(frase in response.lower() for frase in [
+        if response and any(frase in response.lower() for frase in [
             "tô contigo",
             "explica melhor",
             "não peguei",
             "continua aí",
             "quase entendi"
         ]):
-            bloquear_memoria = True
+    bloquear_memoria = True
 
         # 🔹 não salvar resposta muito curta
         if len(response.strip()) < 20:
@@ -693,12 +692,13 @@ class DecisionEngine:
         # 💾 SALVAR MEMÓRIA (SE FOR VÁLIDO)
         # =================================
 
-        if ctx.get("allow_memory") and response and not bloquear_memoria:
+        if response and not bloquear_memoria:
             try:
                 memory.save_memory(username, user_input, response, topic)
             except:
                 pass
 
+        db.close()
 
         return response
     # ===============================
