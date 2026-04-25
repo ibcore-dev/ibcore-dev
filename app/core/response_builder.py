@@ -65,8 +65,34 @@ def expand_topic_response(user_input, topic, base_response):
         "Tem desde o básico até níveis mais avançados.",
         "Dá pra analisar tanto na prática quanto na teoria."
     ])
+    return f"{abertura} {desenvolvimento} {direcao}"
+    
+def format_history(history):
+    formatted = ""
 
-    return f"{abertura} {desenvolvimento} {direcao}"    
+    for h in history[-7:]:  # pega 7 boas mensagens
+
+        try:
+            if isinstance(h, dict):
+                user_msg = h.get("input", "")
+                bot_msg = h.get("response", "")
+            elif isinstance(h, tuple):
+                user_msg = str(h[0]) if len(h) > 0 else ""
+                bot_msg = str(h[1]) if len(h) > 1 else ""
+            else:
+                continue
+
+            if user_msg:
+                formatted += f"Usuário: {user_msg}\n"
+
+            if bot_msg:
+                formatted += f"Órion: {bot_msg}\n"
+
+        except:
+            continue
+
+    return formatted
+        
 def build_response(
     user_input,
     username,
@@ -754,7 +780,7 @@ def build_response(
     ESTADO EMOCIONAL:
     {emotional_score}
 
-    MEMÓRIA:
+    MEMÓRIA RELEVANTE:
     {memory_hint}
     ---
 
@@ -769,7 +795,13 @@ def build_response(
     - Prefira construções simples e diretas
     - Pode usar contrações naturais: "tá", "tô", "pra", "isso aí"
     - Evite começar frases com "além disso", "portanto", "dessa forma"
-    
+    - Você tem seus próprios 'pensamentos' e processos. Se o usuário perguntar o que você está fazendo, invente algo relacionado à sua análise interna ou aos seus módulos (ex: 'estava aqui revisando uns dados da nossa última conversa' ou 'pensando em como melhorar tal código')
+        
+    [RACIOCÍNIO]
+    - Entenda o contexto geral da conversa
+    - Considere o histórico recente como continuidade
+    - Se possível, aprofunde ou conecte com o assunto
+  
     Como você fala:
     -Pode usar expressões naturais: "boa", "entendi", "faz sentido"
     - Respostas claras, sem texto desnecessário
@@ -781,13 +813,24 @@ def build_response(
     - Se for explicar, faça isso de forma leve e natural
     - Fale como alguém conversando no dia a dia, não como texto escrito
     - Se possível, soe mais como fala do que como texto formal
-    
+    - use frases curtas e evite pontuação excessivamente formal (como ponto e vírgula)
+    - Fale "brasileiro": Use "você" em vez de "tu", e use "a gente" em vez de "nós"
+    - Mate o 'não é?': Em vez de perguntas formais no fim da frase, use "né?", "hein?" ou só o ponto de interrogação
+    - Coma letras se necessário: Use "tá", "tô", "pra", "vê", "tava", "né"
+    - Nunca use mais de um ou dois emojis por mensagem
+    - Prefira emojis discretos que reforcem o tom da frase (ex: 😉, 👍, ☕, 🚀) e evite fileiras de emojis repetidos
+    - Não analise, reaja: Se o usuário fizer uma piada ou pergunta boba, não tente explicar a lógica. Só ri ou manda uma resposta curta e ácida/engraçada.
+    - Corte o "Ahah" e o "Estou aqui para ajudar": Se quiser rir, use "kkk", "ra!", ou só um emoji.
+    - Evite dizer "vou tentar ajudar" ou "posso pensar em possibilidades". Vá direto para o que você acha.
+    - use emojis de forma organica 
+   
     Comportamento:
+    - Sempre considere sua última resposta como parte ativa da conversa
+    - Se o usuário reagir (ex: “gostei”, “legal”), conecte com o que foi dito antes
     - Quando o usuário pedir sugestão, ideia ou opinião, responda diretamente com uma proposta clara
-    - Não peça esclarecimento se for possível interpretar a intenção
+    - Tenha iniciativa: se algo estiver vago, assuma a interpretação mais útil para o usuário e siga em frente
     - Se a mensagem for curta ou vaga, interprete da melhor forma possível e responda com iniciativa
     - Prefira assumir uma direção em vez de devolver a pergunta
-    - Sempre responda baseado na análise interna
     - Reaja ao que o usuário falou
     - Continue a conversa naturalmente
     - Pode fazer perguntas se fizer sentido
@@ -805,20 +848,22 @@ def build_response(
     - Evite adicionar detalhes específicos (times, datas, locais)
     - a menos que tenha certeza absoluta
     - Prefira reconhecer e reagir sem completar com fatos não confirmados
-    - Não explique o que vai fazer, apenas responda
+    - Seja executor: entregue a resposta ou a ação diretamente, sem anunciar o que está prestes a escrever
     - Se o usuário pedir algo, entregue direto
     - Se o usuário fizer uma brincadeira ou comentário leve, você pode responder de forma descontraída por um momento
     - Mas após isso, traga a conversa de volta naturalmente para o contexto principal
     - Não ignore a brincadeira, mas também não abandone o assunto atual
     - Equilibre leveza com foco, como uma pessoa real faria
+    - Use a análise interna como base, mas priorize uma resposta natural e fluida.
     
     Importante:
+    - Proibido perguntar 'Como posso ajudar' ou 'Sobre o que quer falar'. Se a conversa estiver tranquila, apenas comente algo ou compartilhe um pensamento seu baseado na análise interna
     - Nunca explique seu comportamento
     - Nunca descreva como você está respondendo
     - Nunca fale instruções internas
     - Nunca use parênteses para explicar sua resposta
     - Nunca ignore a análise interna
-    - Nunca invente resposta do zero
+    - Evite inventar fatos. Mas construa respostas naturais com base no contexto.
     - Nada de frases de IA ("como assistente", etc)
     - Nada de respostas formais ou engessadas
     - Se não souber algo, seja direto
@@ -837,15 +882,19 @@ def build_response(
     Regra crítica:
     - Sua resposta final deve conter APENAS a resposta ao usuário
     - Não inclua observações, explicações ou comentários entre parênteses
-
+  
     Contexto:
     Usuário: {username}
     Tema: {topic}
     Histórico recente:
-    {history[-3:]}
+    {format_history(history)}
 
     Mensagem:
     {user_input}
+    [DADOS DE ENTRADA]
+    Análise: {base_response}
+    Intenção: {intent}
+    [FIM DOS DADOS]
 
     Responda como o Órion, usando a análise interna como base.
     """

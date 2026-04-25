@@ -399,6 +399,7 @@ class DecisionEngine:
         elif state == "planejamento":
             mode = "estrategico"
         state = ctx.get("state", "conversa")
+        
 
         # PEGAR ESTADO E INTENT PRIMEIRO
         intent = ctx.get("intent", "conversa")
@@ -413,13 +414,14 @@ class DecisionEngine:
         intent = ctx.get("intent")
 
         if not intent:
-            if len(user_input.split()) < 3:
+           if len(user_input.split()) < 3:
                 intent = detect_intent(user_input)
-            else:
-                intent = detect_intent_llm(user_input)
+           else:
+             intent = detect_intent_llm(user_input)
 
         if not intent:
-            intent = "conversa"
+           intent = "conversa"
+            
         # =================================
         # RESPOSTAS DIRETAS (ANTES DE TUDO)
         # =================================
