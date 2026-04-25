@@ -675,11 +675,10 @@ class DecisionEngine:
         
         print("ANTES:", response)
         
-        if not response or not str(response).strip():
             response = build_response(
                 user_input=user_input,
                 username=username,
-                response=None,
+                response=response,
                 mode=mode,
                 topic=topic,
                 nome_real=nome_real,
