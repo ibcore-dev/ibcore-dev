@@ -32,40 +32,48 @@ def update_context(username, user_input):
         ctx["pessoa"] = "namorada"
 
     # =========================
-    # CONTEXTO DE ASSUNTO
+    # CONTEXTO DE ASSUNTO (CORRIGIDO)
     # =========================
 
-    if "orion" in text:
-        ctx["assunto"] = "orion"
-        ctx["ultimo_topico"] = "orion"
-
-    elif any(word in text for word in ["projeto", "sistema", "codigo", "arquitetura"]):
+    if any(word in text for word in ["projeto", "sistema", "codigo", "arquitetura"]):
+        ctx["assunto"] = "projeto"
         ctx["ultimo_topico"] = "projeto"
 
+    elif any(word in text for word in ["trabalho", "raiva", "cansado", "estressado"]):
+        ctx["assunto"] = "emocional"
+        ctx["ultimo_topico"] = "emocional"
+
+    elif any(word in text for word in ["dinheiro", "negocio", "empresa", "lucro"]):
+        ctx["assunto"] = "negocio"
+        ctx["ultimo_topico"] = "negocio"
+
+    else:
+        # 🔥 mantém último tópico se não tiver novo
+        if not ctx.get("assunto"):
+            ctx["assunto"] = "geral"
+            ctx["ultimo_topico"] = "geral"
+
+    # ❌ REMOVIDO: trava em "orion"
+    # if "orion" in text: ...
+
     # =========================
-    # DETECÇÃO DE ESTADO (NOVA)
+    # DETECÇÃO DE ESTADO
     # =========================
 
-    # CRIAÇÃO
     if any(w in text for w in ["post", "texto", "conteudo", "ideia"]):
         ctx["state"] = "criacao"
 
-    # RESOLUÇÃO
     elif any(w in text for w in ["erro", "bug", "problema"]):
         ctx["state"] = "resolucao"
 
-    # EXECUÇÃO
     elif any(w in text for w in ["salva", "cria conta", "abre"]):
         ctx["state"] = "execucao"
 
-    # NÃO derruba estado de criação (🔥 importante)
-    if ctx.get("state") == "criacao":
-        pass
-    else:
-        ctx["state"] = ctx.get("state", "conversa")
+    # mantém estado anterior se não mudar
+    ctx["state"] = ctx.get("state", "conversa")
 
     # =========================
-    # INTENÇÃO (leve)
+    # INTENÇÃO
     # =========================
 
     intent = "conversa"
@@ -82,7 +90,7 @@ def update_context(username, user_input):
     ctx["intent"] = intent
 
     # =========================
-    # SHORT CONTEXT (MELHORADO)
+    # SHORT CONTEXT
     # =========================
 
     short_patterns = ["e a", "e o", "e os", "e as", "e sobre", "e isso"]
@@ -96,10 +104,10 @@ def update_context(username, user_input):
             ctx["expanded_input"] = user_input
 
     # =========================
-    # BLOQUEIO DE SALVAMENTO IMPLÍCITO
+    # 🔥 MEMÓRIA SEMPRE ATIVA
     # =========================
 
-    ctx["allow_memory"] = any(w in text for w in ["salva", "lembra", "guarda isso"])
+    ctx["allow_memory"] = True
 
     return ctx
 

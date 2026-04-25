@@ -70,7 +70,7 @@ def expand_topic_response(user_input, topic, base_response):
 def build_response(
     user_input,
     username,
-    response=None,  # 
+    response=None,
     mode=None,
     topic=None,
     nome_real=None,
@@ -82,7 +82,8 @@ def build_response(
     relational_context=None,
     behavior_pattern=None,
     thought=None,
-    self_reference=False
+    self_reference=False,
+    conversation_context=""  # 🔥 NOVO
 ):
 
     base_response = response if response else ""
@@ -269,6 +270,9 @@ def build_response(
 
     contexto_texto = ""
 
+    if conversation_context:
+    contexto_texto += f" Considerando o que você disse antes: {conversation_context[-200:]}"
+    
     if pessoa:
         contexto_texto += f" Você mencionou sua {pessoa} antes."
 
