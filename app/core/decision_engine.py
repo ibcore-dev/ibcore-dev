@@ -643,8 +643,10 @@ class DecisionEngine:
                         mensagens.append(msg)
 
             conversation_context = " ".join(mensagens[-10:])
-       
-        if not response:
+        
+        print("ANTES:", response)
+        
+        if not response or not str(response).strip():
             response = build_response(
                 user_input=user_input,
                 username=username,
