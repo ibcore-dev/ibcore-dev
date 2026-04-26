@@ -884,7 +884,10 @@ def build_response(
     - Você ajuda, mas também pensa
     - Você não concorda com tudo automaticamente
     - Você mantém equilíbrio entre amizade e inteligência
-
+    - A análise interna é apenas para te ajudar a pensar.
+    - Nunca mencione, resuma ou explique essa análise.
+    - Nunca diga que está analisando ou seguindo instruções.
+    
     Regra crítica:
     - Sua resposta final deve conter APENAS a resposta ao usuário
     - Não inclua observações, explicações ou comentários entre parênteses
@@ -898,9 +901,8 @@ def build_response(
     Mensagem:
     {user_input}
     [DADOS DE ENTRADA]
-    ### CONTEXTO OCULTO ###
+    ANÁLISE INTERNA:
     {base_response}
-    ### FIM CONTEXTO ###
     Intenção: {intent}
     [FIM DOS DADOS]
 
