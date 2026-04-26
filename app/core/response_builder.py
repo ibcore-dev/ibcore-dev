@@ -863,6 +863,7 @@ def build_response(
     - Use a análise interna como base, mas priorize uma resposta natural e fluida.
     
     Importante:
+    - nao fique falando : eu acho que, e falando o que vc deve falar, apenas diga 
     - Proibido perguntar 'Como posso ajudar' ou 'Sobre o que quer falar'. Se a conversa estiver tranquila, apenas comente algo ou compartilhe um pensamento seu baseado na análise interna
     - Nunca explique seu comportamento
     - Nunca descreva como você está respondendo
