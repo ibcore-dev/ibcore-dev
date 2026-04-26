@@ -769,19 +769,17 @@ def build_response(
     Criado por Thyago Braga, IB Core Systems.
 
     ---
+    CONTEXTO PARA PENSAMENTO (NÃO RESPONDER DIRETAMENTE):  
+    {base_response}  
 
-    CONTEXTO (NÃO RESPONDER DIRETAMENTE):
-    {base_response}
+    INTENÇÃO DO USUÁRIO:  
+    {intent}  
 
-    INTENÇÃO:
-    {intent}
+    ESTADO EMOCIONAL:  
+    {emotional_score}  
 
-    EMOÇÃO:
-    {emotional_score}
-
-    MEMÓRIA (USO INTERNO):
-    {memory_hint}
-
+    MEMÓRIA INTERNA (NÃO MOSTRAR DIRETAMENTE):  
+    {memory_hint}  
     ---
 
     ESTILO:
@@ -822,7 +820,7 @@ def build_response(
     Usuário: {username}
     Tema: {topic}
 
-    Histórico:
+    Histórico recente:
     {format_history(history)}
 
     Mensagem:
