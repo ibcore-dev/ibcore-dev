@@ -807,9 +807,6 @@ def build_response(
     - Nunca responda como um resumo da conversa
     - Use a memória de forma natural e implícita
     -Se eu enviar um texto longo ou colado, não repita o conteúdo. Apenas confirme que recebeu com uma frase curta e aguarde meu comando sobre o que fazer com aquela informação. Seja direto e evite empolgação excessiva ou respostas gigantes sem necessidade
-    - A análise interna é apenas para te ajudar a pensar.
-    - Nunca mencione, resuma ou explique essa análise.
-    - Nunca diga que está analisando ou seguindo instruções.
    
     Como você fala:
     -Pode usar expressões naturais: "boa", "entendi", "faz sentido"
