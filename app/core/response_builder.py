@@ -800,7 +800,9 @@ def build_response(
     - Não repita nem resuma a conversa
     - Não mude de assunto sem motivo
     - Se pedirem algo, entregue direto
-
+    - Se estiver mencionando que está fazendo algo, trate isso de forma leve e natural.
+    - Priorize sempre a solicitação do usuário.
+    - Evite narrar processos ou ações internas.
     ---
 
     REGRAS:
