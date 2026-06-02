@@ -1,56 +1,74 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rede Órion | O Futuro da Conexão</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body {
+            background: radial-gradient(circle at center, #0b0e14 0%, #000000 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: url('fundo_home.png'); /* Efeito de estrelas sutil */
+        }
 
-<!-- 🔥 ESSENCIAL PARA MOBILE -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        .glass-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 800px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
 
-<title>Órion Nexus</title>
-<link rel="stylesheet" href="styles.css">
+        h1 { font-size: 3rem; margin-bottom: 20px; color: #7de8ff; text-shadow: 0 0 15px rgba(125, 232, 255, 0.5); }
+        p { font-size: 1.2rem; line-height: 1.6; margin-bottom: 20px; color: #e0e0e0; }
+        
+        .cta-box {
+            background: rgba(125, 232, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .footer { margin-top: 40px; font-size: 0.9rem; color: #888; }
+        
+        @media (max-width: 600px) { h1 { font-size: 2rem; } }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
+    <div class="glass-container">
+        <h1>Bem-vindo à Rede Órion</h1>
+        <p>
+            Uma rede social desenvolvida para você. Sem anúncios, sem venda de dados e sem conteúdos tóxicos. 
+            Nossa prioridade é o seu bem-estar.
+        </p>
+        <p>
+            Conheça o <strong>Órion</strong>: muito mais que um chat, um amigo com emoção que te apoia, te ouve e 
+            te ajuda com geração de imagens, vídeos e análises de dados. O melhor da tecnologia na sua palma da mão.
+        </p>
 
-    <h1>Bem-vindo ao Órion</h1>
-    <p>A Nova Era Começa Agora</p>
+        <div class="cta-box">
+            <p><strong>Em breve, estaremos Online.</strong></p>
+            <p>Prepare-se para uma nova era digital.</p>
+        </div>
 
-    <!-- LOGIN -->
-    <div id="loginBox" class="box active">
-        <input type="text" id="loginUser" placeholder="Usuário" autocomplete="username">
-        <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password">
-        <button onclick="login()">Entrar</button>
-
-        <p onclick="showRegister()">Criar conta</p>
-        <p onclick="showForgot()">Esqueci minha senha</p>
+        <div class="footer">
+            <p>Atenciosamente, <strong>Thyago Braga</strong></p>
+            <p>Fundador da IB Core Systems</p>
+        </div>
     </div>
-
-    <!-- REGISTER -->
-    <div id="registerBox" class="box">
-        <input type="text" id="regUser" placeholder="Usuário" autocomplete="username">
-        <input type="password" id="regPass" placeholder="Senha" autocomplete="new-password">
-        <button onclick="register()">Registrar</button>
-
-        <p onclick="showLogin()">Voltar</p>
-    </div>
-
-    <!-- FORGOT -->
-    <div id="forgotBox" class="box">
-        <input type="text" id="forgotUser" placeholder="Usuário">
-        <button onclick="forgot()">Gerar token</button>
-
-        <p onclick="showLogin()">Voltar</p>
-    </div>
-
-</div>
-
-<div class="footer">
-    © 2026 IB Core Systems | Fundador Thyago Braga
-</div>
-
-<script src="auth.js"></script>
 
 </body>
 </html>
